@@ -1,5 +1,7 @@
 # Nuke.GitHub
 
+
+![NuGet](https://img.shields.io/nuget/v/Nuke.GitHub.svg)
 [![MyGet](https://img.shields.io/myget/dangl/v/Nuke.GitHub.svg)]()
 
 This plugin provides some methods to work with GitHub repositories
