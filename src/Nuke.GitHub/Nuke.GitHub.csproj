@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>GitHub interaction for NUKE Build</Description>
+    <Authors>Georg Dangl</Authors>
+    <Copyright>(c) $([System.DateTime]::Now.Year) Georg Dangl</Copyright>
+    <PackageProjectUrl>https://github.com/GeorgDangl/Nuke.GitHub</PackageProjectUrl>
+    <PackageIconUrl>https://blog.dangl.me/media/1114/gd_icon_256.png</PackageIconUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="11.1.0" />
+    <PackageReference Include="Octokit" Version="0.29.0" />
+    <PackageReference Include="Nuke.Common" Version="0.2.0" />
+  </ItemGroup>
+
+</Project>

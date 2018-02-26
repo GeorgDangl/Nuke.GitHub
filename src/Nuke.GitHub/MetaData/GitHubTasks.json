@@ -1,0 +1,58 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nuke-build/nuke/master/source/Nuke.CodeGeneration/schema.json",
+  "license": [
+    "Copyright Georg Dangl 2018.",
+    "Distributed under the MIT License.",
+    "https://github.com/GeorgDangl/Nuke.GitHub/blob/dev/LICENSE.md"
+  ],
+  "name": "GitHub",
+  "officialUrl": "https://github.com/GeorgDangl/Nuke.GitHub",
+  "help": "This class provides different tasks to work with GitHub repositories.",
+  "dataClasses": [
+    {
+      "name": "GitHubReleaseSettings",
+      "properties": [
+        {
+          "name": "ArtifactPaths",
+          "type": "string[]",
+          "help": "Optional file paths for files that should be appended to a release"
+        },
+        {
+          "name": "ReleaseNotes",
+          "type": "string",
+          "help": "The message for the GitHub release"
+        },
+        {
+          "name": "Tag",
+          "type": "string",
+          "assertion": "NotNull",
+          "help": "The tag that should be used for the release, e.g. \"v1.0.0\""
+        },
+        {
+          "name": "Token",
+          "type": "string",
+          "assertion": "NotNull",
+          "help": "The Token for the GitHub API"
+        },
+        {
+          "name": "CommitSha",
+          "type": "string",
+          "assertion": "NotNull",
+          "help": "The commit SHA on which to create the release"
+        },
+        {
+          "name": "RepositoryOwner",
+          "type": "string",
+          "assertion": "NotNull",
+          "help": "The account under which the repository is hosted"
+        },
+        {
+          "name": "RepositoryName",
+          "type": "string",
+          "assertion": "NotNull",
+          "help": "The name of the repository"
+        }
+      ]
+    }
+  ]
+}
