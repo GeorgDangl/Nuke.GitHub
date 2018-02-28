@@ -12,6 +12,8 @@ Currently supported:
 
 [Link to documentation](https://docs.dangl-it.com/Projects/Nuke.GitHub).
 
+[Changelog](./Changelog.md)
+
 ## CI Builds
 
 All builds are available on MyGet:
