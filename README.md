@@ -22,6 +22,8 @@ All builds are available on MyGet:
 ## Example
 
     using static Nuke.GitHub.GitHubTasks;
+    using static Nuke.GitHub.ChangeLogExtensions;
+    using static Nuke.Common.ChangeLog.ChangelogTasks;
 
     Target PublishGitHubRelease => _ => _
         .DependsOn(Pack)
@@ -29,14 +31,20 @@ All builds are available on MyGet:
         .OnlyWhen(() => GitVersion.BranchName.Equals("master") || GitVersion.BranchName.Equals("origin/master"))
         .Executes<Task>(async () =>
         {
-            var changeLog = GetLatestChangeLog(ChangeLogFile, escapeMsBuildProperty: false);
-            var repositoryInfo = GetGitHubRepositoryInfo(GitRepository);
             var releaseTag = $"v{GitVersion.MajorMinorPatch}";
+
+            // Not providing the second, optional parameter gives the latest section
+            var changeLogSectionEntries = ExtractChangelogSectionNotes(ChangeLogFile);
+            var latestChangeLog = changeLogSectionEntries
+                .Aggregate((c, n) => c + Environment.NewLine + n);
+            var completeChangeLog = $"## {releaseTag}" + Environment.NewLine + latestChangeLog;
+
+            var repositoryInfo = GetGitHubRepositoryInfo(GitRepository);
 
             await PublishRelease(new GitHubReleaseSettings()
                 .SetArtifactPaths(GlobFiles(OutputDirectory, "*.nupkg").NotEmpty().ToArray())
                 .SetCommitSha(GitVersion.Sha)
-                .SetReleaseNotes(changeLog)
+                .SetReleaseNotes(completeChangeLog)
                 .SetRepositoryName(repositoryInfo.repositoryName)
                 .SetRepositoryOwner(repositoryInfo.gitHubOwner)
                 .SetTag(releaseTag)
