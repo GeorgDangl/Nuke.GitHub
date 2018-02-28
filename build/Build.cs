@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Nuke.Common;
-using Nuke.Common.Git;
+﻿using Nuke.Common.Git;
 using Nuke.Common.Tools.DocFx;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
@@ -12,14 +7,20 @@ using Nuke.Core.Utilities;
 using Nuke.Core.Utilities.Collections;
 using Nuke.GitHub;
 using Nuke.WebDocu;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using static Nuke.CodeGeneration.CodeGenerator;
+using static Nuke.Common.ChangeLog.ChangelogTasks;
+using static Nuke.Common.Tools.DocFx.DocFxTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
+using static Nuke.Core.EnvironmentInfo;
 using static Nuke.Core.IO.FileSystemTasks;
 using static Nuke.Core.IO.PathConstruction;
-using static Nuke.Core.EnvironmentInfo;
-using static Nuke.CodeGeneration.CodeGenerator;
-using static Nuke.Common.Tools.DocFx.DocFxTasks;
-using static Nuke.WebDocu.WebDocuTasks;
+using static Nuke.GitHub.ChangeLogExtensions;
 using static Nuke.GitHub.GitHubTasks;
+using static Nuke.WebDocu.WebDocuTasks;
 
 class Build : NukeBuild
 {
@@ -69,7 +70,8 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
         {
-            var changeLog = GetCompleteChangeLog(ChangeLogFile, escapeMsBuildProperty: true);
+            var changeLog = GetCompleteChangeLog(ChangeLogFile)
+                .EscapeStringPropertyForMsBuild();
             DotNetPack(s => DefaultDotNetPack
                 .SetPackageReleaseNotes(changeLog));
         });
@@ -148,14 +150,19 @@ class Build : NukeBuild
         .OnlyWhen(() => GitVersion.BranchName.Equals("master") || GitVersion.BranchName.Equals("origin/master"))
         .Executes<Task>(async () =>
         {
-            var changeLog = GetLatestChangeLog(ChangeLogFile, escapeMsBuildProperty: false);
-            var repositoryInfo = GetGitHubRepositoryInfo(GitRepository);
             var releaseTag = $"v{GitVersion.MajorMinorPatch}";
+
+            var changeLogSectionEntries = ExtractChangelogSectionNotes(ChangeLogFile);
+            var latestChangeLog = changeLogSectionEntries
+                .Aggregate((c, n) => c + Environment.NewLine + n);
+            var completeChangeLog = $"## {releaseTag}" + Environment.NewLine + latestChangeLog;
+
+            var repositoryInfo = GetGitHubRepositoryInfo(GitRepository);
 
             await PublishRelease(new GitHubReleaseSettings()
                 .SetArtifactPaths(GlobFiles(OutputDirectory, "*.nupkg").NotEmpty().ToArray())
                 .SetCommitSha(GitVersion.Sha)
-                .SetReleaseNotes(changeLog)
+                .SetReleaseNotes(completeChangeLog)
                 .SetRepositoryName(repositoryInfo.repositoryName)
                 .SetRepositoryOwner(repositoryInfo.gitHubOwner)
                 .SetTag(releaseTag)

@@ -46,6 +46,9 @@ namespace Nuke.GitHub
             base.AssertValid();
             ControlFlow.Assert(Tag != null, "Tag != null");
             ControlFlow.Assert(Token != null, "Token != null");
+            ControlFlow.Assert(CommitSha != null, "CommitSha != null");
+            ControlFlow.Assert(RepositoryOwner != null, "RepositoryOwner != null");
+            ControlFlow.Assert(RepositoryName != null, "RepositoryName != null");
         }
     }
     #endregion

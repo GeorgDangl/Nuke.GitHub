@@ -1,10 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Nuke.Common.Git;
+using Nuke.Core;
 using Octokit;
 
 namespace Nuke.GitHub
@@ -69,66 +68,10 @@ namespace Nuke.GitHub
 
         public static (string gitHubOwner, string repositoryName) GetGitHubRepositoryInfo(GitRepository gitRepository)
         {
-            if (gitRepository.Endpoint != "github.com")
-            {
-                throw new ArgumentException("The GitRepository must be from GitHub", nameof(gitRepository));
-            }
+            ControlFlow.Assert(gitRepository.IsGitHubRepository(), $"The {nameof(gitRepository)} parameter must reference a GitHub repository.");   
 
             var split = gitRepository.Identifier.Split('/');
             return (split[0], split[1]);
-        }
-
-        public static string GetCompleteChangeLog(string changeLogFile, bool escapeMsBuildProperty)
-        {
-            var fileContent = File.ReadAllText(changeLogFile);
-            var lines = Regex.Split(fileContent, "\r\n?|\n");
-            var changeLogLines = lines
-                .SkipWhile(l => !l.StartsWith("##"));
-            var stringBuilder = new StringBuilder();
-            foreach (var changeLogLine in changeLogLines)
-            {
-                stringBuilder.AppendLine(changeLogLine);
-            }
-
-            var releaseNotes = stringBuilder.ToString();
-            if (escapeMsBuildProperty)
-            {
-                releaseNotes = EscapePropertyForMsBuild(releaseNotes);
-            }
-
-            return releaseNotes;
-        }
-
-        public static string GetLatestChangeLog(string changeLogFile, bool escapeMsBuildProperty)
-        {
-            var fileContent = File.ReadAllText(changeLogFile);
-            var lines = Regex.Split(fileContent, "\r\n?|\n");
-            var changeLogLines = lines
-                .SkipWhile(l => !l.StartsWith("##"))
-                .TakeWhile((l, i) => i == 0 || !l.StartsWith("##"));
-            var stringBuilder = new StringBuilder();
-            foreach (var changeLogLine in changeLogLines)
-            {
-                stringBuilder.AppendLine(changeLogLine);
-            }
-
-            var releaseNotes = stringBuilder.ToString();
-            if (escapeMsBuildProperty)
-            {
-                releaseNotes = EscapePropertyForMsBuild(releaseNotes);
-            }
-
-            return releaseNotes;
-        }
-
-        static string EscapePropertyForMsBuild(string source)
-        {
-            return source
-                .Replace(";", "%3B")
-                .Replace(",", "%2C")
-                .Replace(" ", "%20")
-                .Replace("\r", "%0D")
-                .Replace("\n", "%0A");
         }
     }
 }
