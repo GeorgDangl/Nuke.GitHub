@@ -6,7 +6,7 @@
     <Authors>Georg Dangl</Authors>
     <Copyright>(c) $([System.DateTime]::Now.Year) Georg Dangl</Copyright>
     <PackageProjectUrl>https://github.com/GeorgDangl/Nuke.GitHub</PackageProjectUrl>
-    <PackageIconUrl>https://blog.dangl.me/media/1114/gd_icon_256.png</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/nuke-build/nuke/master/icon.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>
