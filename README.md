@@ -1,5 +1,6 @@
 # Nuke.GitHub
 
+[![Built with Nuke](http://nuke.build/rounded)](https://www.nuke.build)
 
 ![NuGet](https://img.shields.io/nuget/v/Nuke.GitHub.svg)
 [![MyGet](https://img.shields.io/myget/dangl/v/Nuke.GitHub.svg)]()
@@ -11,6 +12,8 @@ Currently supported:
   * **PublishRelease** to create GitHub releases.
 
 [Link to documentation](https://docs.dangl-it.com/Projects/Nuke.GitHub).
+
+[Changelog](./Changelog.md)
 
 ## CI Builds
 

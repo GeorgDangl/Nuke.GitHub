@@ -2,6 +2,9 @@
 
 All notable changes to **Nuke.GitHub** are documented here.
 
+## v1.0.2
+- Use the official NUKE logo for the package
+
 ## v1.0.1
 - Refactor code to follow NUKE tooling recommendations
 - Provide `Nuke.GitHub.ChangeLogExtensions`. This will likely be merged with NUKE itself
