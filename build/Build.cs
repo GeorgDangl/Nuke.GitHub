@@ -21,7 +21,7 @@ using static Nuke.Common.IO.PathConstruction;
 using static Nuke.GitHub.ChangeLogExtensions;
 using static Nuke.GitHub.GitHubTasks;
 using static Nuke.WebDocu.WebDocuTasks;
-using Nuke.Core.Tooling;
+using Nuke.Common.Tooling;
 
 class Build : NukeBuild
 {
@@ -108,7 +108,7 @@ class Build : NukeBuild
             var dotnetPath = Path.GetDirectoryName(ToolPathResolver.GetPathExecutable("dotnet.exe"));
             var msBuildPath = Path.Combine(dotnetPath, "sdk", DocFxDotNetSdkVersion, "MSBuild.dll");
             SetVariable("MSBUILD_EXE_PATH", msBuildPath);
-            DocFxMetadata(DocFxFile, s => s.SetLogLevel(DocFxLogLevel.Verbose));
+            DocFxMetadata(DocFxFile, s => s.SetLogLevel(DocFxLogLevel.Warning));
         });
 
     Target BuildDocumentation => _ => _
@@ -126,7 +126,7 @@ class Build : NukeBuild
 
             DocFxBuild(DocFxFile, s => s
                 .ClearXRefMaps()
-                .SetLogLevel(DocFxLogLevel.Verbose));
+                .SetLogLevel(DocFxLogLevel.Warning));
 
             File.Delete(SolutionDirectory / "index.md");
             Directory.Delete(SolutionDirectory / "api", true);
@@ -140,14 +140,12 @@ class Build : NukeBuild
         .Requires(() => DocuApiEndpoint)
         .Executes(() =>
         {
-            /*
             WebDocu(s => s
                 .SetDocuApiEndpoint(DocuApiEndpoint)
                 .SetDocuApiKey(DocuApiKey)
                 .SetSourceDirectory(OutputDirectory / "docs")
                 .SetVersion(GitVersion.NuGetVersion)
             );
-            */
         });
 
     Target PublishGitHubRelease => _ => _
