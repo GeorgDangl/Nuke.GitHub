@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Nuke.Common.Git;
-using Nuke.Core;
+using Nuke.Common;
 using Octokit;
 
 namespace Nuke.GitHub
