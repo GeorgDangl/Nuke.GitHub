@@ -19,7 +19,7 @@
     <PackageReference Include="docfx.console" Version="2.31.0">
       <ExcludeAssets>build</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Nuke.WebDocu" Version="1.0.2" />
+    <PackageReference Include="Nuke.WebDocu" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>
