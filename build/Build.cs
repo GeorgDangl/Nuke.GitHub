@@ -2,9 +2,9 @@
 using Nuke.Common.Tools.DocFx;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
-using Nuke.Core;
-using Nuke.Core.Utilities;
-using Nuke.Core.Utilities.Collections;
+using Nuke.Common;
+using Nuke.Common.Utilities;
+using Nuke.Common.Utilities.Collections;
 using Nuke.GitHub;
 using Nuke.WebDocu;
 using System;
@@ -15,9 +15,9 @@ using static Nuke.CodeGeneration.CodeGenerator;
 using static Nuke.Common.ChangeLog.ChangelogTasks;
 using static Nuke.Common.Tools.DocFx.DocFxTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
-using static Nuke.Core.EnvironmentInfo;
-using static Nuke.Core.IO.FileSystemTasks;
-using static Nuke.Core.IO.PathConstruction;
+using static Nuke.Common.EnvironmentInfo;
+using static Nuke.Common.IO.FileSystemTasks;
+using static Nuke.Common.IO.PathConstruction;
 using static Nuke.GitHub.ChangeLogExtensions;
 using static Nuke.GitHub.GitHubTasks;
 using static Nuke.WebDocu.WebDocuTasks;
@@ -43,6 +43,7 @@ class Build : NukeBuild
     [Parameter] string GitHubAuthenticationToken;
 
     string DocFxFile => SolutionDirectory / "docfx.json";
+
     // This is used to to infer which dotnet sdk version to use when generating DocFX metadata
     string DocFxDotNetSdkVersion = "2.1.4";
     string ChangeLogFile => RootDirectory / "CHANGELOG.md";
@@ -139,19 +140,21 @@ class Build : NukeBuild
         .Requires(() => DocuApiEndpoint)
         .Executes(() =>
         {
+            /*
             WebDocu(s => s
                 .SetDocuApiEndpoint(DocuApiEndpoint)
                 .SetDocuApiKey(DocuApiKey)
                 .SetSourceDirectory(OutputDirectory / "docs")
                 .SetVersion(GitVersion.NuGetVersion)
             );
+            */
         });
 
     Target PublishGitHubRelease => _ => _
         .DependsOn(Pack)
         .Requires(() => GitHubAuthenticationToken)
         .OnlyWhen(() => GitVersion.BranchName.Equals("master") || GitVersion.BranchName.Equals("origin/master"))
-        .Executes<Task>(async () =>
+        .Executes(() =>
         {
             var releaseTag = $"v{GitVersion.MajorMinorPatch}";
 
@@ -162,15 +165,18 @@ class Build : NukeBuild
 
             var repositoryInfo = GetGitHubRepositoryInfo(GitRepository);
 
-            await PublishRelease(new GitHubReleaseSettings()
-                .SetArtifactPaths(GlobFiles(OutputDirectory, "*.nupkg").NotEmpty().ToArray())
-                .SetCommitSha(GitVersion.Sha)
-                .SetReleaseNotes(completeChangeLog)
-                .SetRepositoryName(repositoryInfo.repositoryName)
-                .SetRepositoryOwner(repositoryInfo.gitHubOwner)
-                .SetTag(releaseTag)
-                .SetToken(GitHubAuthenticationToken)
-            );
+            PublishRelease(new GitHubReleaseSettings()
+                    .SetArtifactPaths(GlobFiles(OutputDirectory, "*.nupkg").NotEmpty().ToArray())
+                    .SetCommitSha(GitVersion.Sha)
+                    .SetReleaseNotes(completeChangeLog)
+                    .SetRepositoryName(repositoryInfo.repositoryName)
+                    .SetRepositoryOwner(repositoryInfo.gitHubOwner)
+                    .SetTag(releaseTag)
+                    .SetToken(GitHubAuthenticationToken)
+                )
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
         });
 
     Target Generate => _ => _
@@ -178,7 +184,7 @@ class Build : NukeBuild
         .Executes(() =>
         {
             GenerateCode(
-                metadataDirectory: RootDirectory / "src" / "Nuke.GitHub" / "MetaData",
+                specificationDirectory: RootDirectory / "src" / "Nuke.GitHub" / "MetaData",
                 generationBaseDirectory: RootDirectory / "src" / "Nuke.GitHub",
                 baseNamespace: "Nuke.GitHub"
             );
