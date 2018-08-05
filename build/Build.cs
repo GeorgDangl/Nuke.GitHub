@@ -168,7 +168,7 @@ class Build : NukeBuild
         .DependsOn(Pack)
         .Requires(() => GitHubAuthenticationToken)
         .OnlyWhen(() => GitVersion.BranchName.Equals("master") || GitVersion.BranchName.Equals("origin/master"))
-        .Executes(() =>
+        .Executes(async () =>
         {
             var releaseTag = $"v{GitVersion.MajorMinorPatch}";
 
@@ -179,7 +179,7 @@ class Build : NukeBuild
 
             var repositoryInfo = GetGitHubRepositoryInfo(GitRepository);
 
-            PublishRelease(new GitHubReleaseSettings()
+            await PublishRelease(new GitHubReleaseSettings()
                     .SetArtifactPaths(GlobFiles(OutputDirectory, "*.nupkg").NotEmpty().ToArray())
                     .SetCommitSha(GitVersion.Sha)
                     .SetReleaseNotes(completeChangeLog)
@@ -187,10 +187,7 @@ class Build : NukeBuild
                     .SetRepositoryOwner(repositoryInfo.gitHubOwner)
                     .SetTag(releaseTag)
                     .SetToken(GitHubAuthenticationToken)
-                )
-                .ConfigureAwait(false)
-                .GetAwaiter()
-                .GetResult();
+                );
         });
 
     Target Generate => _ => _
