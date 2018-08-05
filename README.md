@@ -1,5 +1,6 @@
 # Nuke.GitHub
 
+[![Build Status](https://jenkins.dangl.me/buildStatus/icon?job=Nuke.GitHub/develop)](https://jenkins.dangl.me/job/Nuke.GitHub/develop)  
 [![Built with Nuke](http://nuke.build/rounded)](https://www.nuke.build)
 
 ![NuGet](https://img.shields.io/nuget/v/Nuke.GitHub.svg)
