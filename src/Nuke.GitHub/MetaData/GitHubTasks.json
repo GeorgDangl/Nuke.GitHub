@@ -11,6 +11,7 @@
   "dataClasses": [
     {
       "name": "GitHubReleaseSettings",
+      "extensionMethods": true,
       "properties": [
         {
           "name": "ArtifactPaths",
@@ -51,6 +52,12 @@
           "type": "string",
           "assertion": "NotNull",
           "help": "The name of the repository"
+        },
+        {
+          "name": "Prerelease",
+          "type": "bool",
+          "default": "false",
+          "help": "Whether this is a pre-release"
         }
       ]
     }
