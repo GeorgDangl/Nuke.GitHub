@@ -2,9 +2,10 @@
 // Distributed under the MIT License.
 // https://github.com/nuke-build/nuke/blob/master/LICENSE
 
-// Generated with Nuke.CodeGeneration, Version: 0.4.0 [CommitSha: c494ebb7].
+// Generated with Nuke.CodeGeneration, Version: 0.6.0 [CommitSha: 5a428f0d].
 
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 using Nuke.Common;
 using Nuke.Common.Execution;
 using Nuke.Common.Tooling;
@@ -41,6 +42,8 @@ namespace Nuke.GitHub
         public virtual string RepositoryOwner { get; internal set; }
         /// <summary><p>The name of the repository</p></summary>
         public virtual string RepositoryName { get; internal set; }
+        /// <summary><p>Whether this is a pre-release</p></summary>
+        public virtual bool? Prerelease { get; internal set; } = false;
         protected override void AssertValid()
         {
             base.AssertValid();
@@ -181,6 +184,48 @@ namespace Nuke.GitHub
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.RepositoryName = null;
+            return toolSettings;
+        }
+        #endregion
+        #region Prerelease
+        /// <summary><p><em>Sets <see cref="GitHubReleaseSettings.Prerelease"/>.</em></p><p>Whether this is a pre-release</p></summary>
+        [Pure]
+        public static GitHubReleaseSettings SetPrerelease(this GitHubReleaseSettings toolSettings, bool? prerelease)
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Prerelease = prerelease;
+            return toolSettings;
+        }
+        /// <summary><p><em>Resets <see cref="GitHubReleaseSettings.Prerelease"/>.</em></p><p>Whether this is a pre-release</p></summary>
+        [Pure]
+        public static GitHubReleaseSettings ResetPrerelease(this GitHubReleaseSettings toolSettings)
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Prerelease = null;
+            return toolSettings;
+        }
+        /// <summary><p><em>Enables <see cref="GitHubReleaseSettings.Prerelease"/>.</em></p><p>Whether this is a pre-release</p></summary>
+        [Pure]
+        public static GitHubReleaseSettings EnablePrerelease(this GitHubReleaseSettings toolSettings)
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Prerelease = true;
+            return toolSettings;
+        }
+        /// <summary><p><em>Disables <see cref="GitHubReleaseSettings.Prerelease"/>.</em></p><p>Whether this is a pre-release</p></summary>
+        [Pure]
+        public static GitHubReleaseSettings DisablePrerelease(this GitHubReleaseSettings toolSettings)
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Prerelease = false;
+            return toolSettings;
+        }
+        /// <summary><p><em>Toggles <see cref="GitHubReleaseSettings.Prerelease"/>.</em></p><p>Whether this is a pre-release</p></summary>
+        [Pure]
+        public static GitHubReleaseSettings TogglePrerelease(this GitHubReleaseSettings toolSettings)
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Prerelease = !toolSettings.Prerelease;
             return toolSettings;
         }
         #endregion

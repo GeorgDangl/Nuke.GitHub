@@ -27,7 +27,8 @@ namespace Nuke.GitHub
                 TargetCommitish = settings.CommitSha,
                 Name = releaseTag,
                 Body = settings.ReleaseNotes,
-                Draft = true
+                Draft = true,
+                Prerelease = settings.Prerelease ?? false
             };
             var releaseCreationResult = await client.Repository.Release.Create(settings.RepositoryOwner, settings.RepositoryName, newRelease);
 

@@ -2,6 +2,9 @@
 
 All notable changes to **Nuke.GitHub** are documented here.
 
+## v1.2.1:
+- Add option to mark releases as `Prerelease`
+
 ## v1.2.0:
 - Update to NUKE 0.6.0
 
