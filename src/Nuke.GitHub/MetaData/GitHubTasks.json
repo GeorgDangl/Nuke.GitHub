@@ -11,6 +11,7 @@
   "dataClasses": [
     {
       "name": "GitHubReleaseSettings",
+      "baseClass": "GitHubSettings",
       "extensionMethods": true,
       "properties": [
         {
@@ -30,17 +31,53 @@
           "help": "The tag that should be used for the release, e.g. \"v1.0.0\""
         },
         {
-          "name": "Token",
-          "type": "string",
-          "assertion": "NotNull",
-          "help": "The Token for the GitHub API"
-        },
-        {
           "name": "CommitSha",
           "type": "string",
           "assertion": "NotNull",
           "help": "The commit SHA on which to create the release"
         },
+        {
+          "name": "Prerelease",
+          "type": "bool",
+          "default": "false",
+          "help": "Whether this is a pre-release"
+        }
+      ]
+    },
+    {
+      "name": "GitHubPullRequestSettings",
+      "baseClass": "GitHubSettings",
+      "extensionMethods": true,
+      "properties": [
+        {
+          "name": "Base",
+          "type": "string",
+          "assertion": "NotNull",
+          "help": "The name of the branch you want the changes pulled into"
+        },
+        {
+          "name": "Head",
+          "type": "string",
+          "assertion": "NotNull",
+          "help": "The name of the branch where your changes are implemented"
+        },
+        {
+          "name": "Title",
+          "type": "string",
+          "assertion": "NotNull",
+          "help": "The title of the pull request"
+        },
+        {
+          "name": "Body",
+          "type": "string",
+          "help": "The optional contents of the pull request"
+        }
+      ]
+    },
+    {
+      "name": "GitHubSettings",
+      "extensionMethods": true,
+      "properties": [
         {
           "name": "RepositoryOwner",
           "type": "string",
@@ -54,10 +91,10 @@
           "help": "The name of the repository"
         },
         {
-          "name": "Prerelease",
-          "type": "bool",
-          "default": "false",
-          "help": "Whether this is a pre-release"
+          "name": "Token",
+          "type": "string",
+          "assertion": "NotNull",
+          "help": "The Token for the GitHub API"
         }
       ]
     }
