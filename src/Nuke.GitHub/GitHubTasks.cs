@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Nuke.Common.Git;
 using Nuke.Common;
+using Nuke.Common.Tooling;
 using Octokit;
 
 namespace Nuke.GitHub
@@ -56,6 +58,39 @@ namespace Nuke.GitHub
             var updatedRelease = createdRelease.ToUpdate();
             updatedRelease.Draft = false;
             await client.Repository.Release.Edit(settings.RepositoryOwner, settings.RepositoryName, createdRelease.Id, updatedRelease);
+        }
+
+        public static async Task CreatePullRequest(Configure<GitHubPullRequestSettings> configure)
+        {
+            var settings = configure.Invoke(new GitHubPullRequestSettings());
+            var client = GetAuthenticatedClient(settings.Token);
+            var repository = await GetRepository(x => settings);
+            var pullRequests = await client.Repository.PullRequest.GetAllForRepository(repository.Id,
+                new PullRequestRequest
+                {
+                    State = ItemStateFilter.Open,
+                    Head = settings.Head,
+                    Base = settings.Base
+                });
+
+            if (pullRequests.Count == 0) Logger.Info($"Pull request from branch '{settings.Head}' into '${settings.Base}' already exists");
+            await client.PullRequest.Create(repository.Id, new NewPullRequest(settings.Title, settings.Head, settings.Base) { Body = settings.Body });
+        }
+
+        public static async Task<IReadOnlyList<Release>> GetReleases(Configure<GitHubSettings> configure, int? maxNumberOfReleases)
+        {
+            var settings = configure.Invoke(new GitHubSettings());
+            var client = GetAuthenticatedClient(settings.Token);
+
+            var apiOptions = new ApiOptions { PageSize = maxNumberOfReleases };
+            return await client.Repository.Release.GetAll(settings.RepositoryOwner, settings.RepositoryName, apiOptions);
+        }
+
+        public static async Task<Repository> GetRepository(Configure<GitHubSettings> configurator)
+        {
+            var settings = configurator.Invoke(new GitHubSettings());
+            var client = GetAuthenticatedClient(settings.Token);
+            return await client.Repository.Get(settings.RepositoryOwner, settings.RepositoryName);
         }
 
         static GitHubClient GetAuthenticatedClient(string token)
