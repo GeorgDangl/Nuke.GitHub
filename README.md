@@ -11,6 +11,9 @@ in [NUKE Build](https://github.com/nuke-build/nuke).
 
 Currently supported:
   * **PublishRelease** to create GitHub releases.
+  * **CreatePullRequest**
+  * **GetReleases**
+  * **GetRepository**
 
 [Link to documentation](https://docs.dangl-it.com/Projects/Nuke.GitHub).
 

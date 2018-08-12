@@ -2,6 +2,10 @@
 
 All notable changes to **Nuke.GitHub** are documented here.
 
+## v1.3.0:
+- Add CreatePullRequest, GetReleases and GetRepository tasks
+- Make `PublishRelease` invocation consistent with other NUKE tools
+
 ## v1.2.1:
 - Add option to mark releases as `Prerelease`
 
