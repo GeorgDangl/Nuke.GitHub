@@ -12,8 +12,9 @@ namespace Nuke.GitHub
 {
     public static partial class GitHubTasks
     {
-        public static async Task PublishRelease(GitHubReleaseSettings settings)
+        public static async Task PublishRelease(Configure<GitHubReleaseSettings> configure)
         {
+            var settings = configure.Invoke(new GitHubReleaseSettings());
             var releaseTag = settings.Tag;
             var client = GetAuthenticatedClient(settings.Token);
             var existingReleases = await client.Repository.Release.GetAll(settings.RepositoryOwner, settings.RepositoryName);
