@@ -11,6 +11,9 @@ in [NUKE Build](https://github.com/nuke-build/nuke).
 
 Currently supported:
   * **PublishRelease** to create GitHub releases.
+  * **CreatePullRequest**
+  * **GetReleases**
+  * **GetRepository**
 
 [Link to documentation](https://docs.dangl-it.com/Projects/Nuke.GitHub).
 
@@ -45,7 +48,7 @@ All builds are available on MyGet:
 
             var repositoryInfo = GetGitHubRepositoryInfo(GitRepository);
 
-            await PublishRelease(new GitHubReleaseSettings()
+            await PublishRelease(x => x
                 .SetArtifactPaths(GlobFiles(OutputDirectory, "*.nupkg").NotEmpty().ToArray())
                 .SetCommitSha(GitVersion.Sha)
                 .SetReleaseNotes(completeChangeLog)
