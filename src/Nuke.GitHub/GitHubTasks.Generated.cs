@@ -34,6 +34,8 @@ namespace Nuke.GitHub
         public virtual string ReleaseNotes { get; internal set; }
         /// <summary><p>The tag that should be used for the release, e.g. "v1.0.0"</p></summary>
         public virtual string Tag { get; internal set; }
+        /// <summary><p>The name of the release. If ommited, the value of <see cref="Tag"/> is used</p></summary>
+        public virtual string Name { get; internal set; }
         /// <summary><p>The commit SHA on which to create the release</p></summary>
         public virtual string CommitSha { get; internal set; }
         /// <summary><p>Whether this is a pre-release</p></summary>
@@ -149,6 +151,24 @@ namespace Nuke.GitHub
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Tag = null;
+            return toolSettings;
+        }
+        #endregion
+        #region Name
+        /// <summary><p><em>Sets <see cref="GitHubReleaseSettings.Name"/>.</em></p><p>The name of the release. If ommited, the value of <see cref="Tag"/> is used</p></summary>
+        [Pure]
+        public static GitHubReleaseSettings SetName(this GitHubReleaseSettings toolSettings, string name)
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Name = name;
+            return toolSettings;
+        }
+        /// <summary><p><em>Resets <see cref="GitHubReleaseSettings.Name"/>.</em></p><p>The name of the release. If ommited, the value of <see cref="Tag"/> is used</p></summary>
+        [Pure]
+        public static GitHubReleaseSettings ResetName(this GitHubReleaseSettings toolSettings)
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Name = null;
             return toolSettings;
         }
         #endregion
