@@ -34,6 +34,7 @@ namespace Nuke.GitHub
                 Draft = true,
                 Prerelease = settings.Prerelease ?? false
             };
+            Logger.Info("Creating release draft...");
             var releaseCreationResult = await client.Repository.Release.Create(settings.RepositoryOwner, settings.RepositoryName, newRelease);
 
             var createdRelease = await client.Repository.Release.Get(settings.RepositoryOwner, settings.RepositoryName, releaseCreationResult.Id);
@@ -52,6 +53,7 @@ namespace Nuke.GitHub
                             RawData = artifactStream,
                         };
 
+                        Logger.Info($"Uploading artifact {artifactPath}...");
                         await client.Repository.Release.UploadAsset(createdRelease, assetUpload);
                     }
                 }
@@ -60,6 +62,7 @@ namespace Nuke.GitHub
             var updatedRelease = createdRelease.ToUpdate();
             updatedRelease.Draft = false;
             await client.Repository.Release.Edit(settings.RepositoryOwner, settings.RepositoryName, createdRelease.Id, updatedRelease);
+            Logger.Info($"Release {releaseTag} was successfully created");
         }
 
         public static async Task CreatePullRequest(Configure<GitHubPullRequestSettings> configure)
