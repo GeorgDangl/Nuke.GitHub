@@ -2,6 +2,9 @@
 
 All notable changes to **Nuke.GitHub** are documented here.
 
+## v1.3.3:
+- Return from `CreatePullRequest` if the specified one already exists instead of waiting for the Octokit API to fail
+
 ## v1.3.2:
 - Add optional configuration to specify the name of the GitHub release
 
