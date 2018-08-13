@@ -2,6 +2,9 @@
 
 All notable changes to **Nuke.GitHub** are documented here.
 
+## v1.3.1:
+- Invoke `AssertValid()` on settings before using them to fail early in case of invalid settings
+
 ## v1.3.0:
 - Add CreatePullRequest, GetReleases and GetRepository tasks
 - Make `PublishRelease` invocation consistent with other NUKE tools
