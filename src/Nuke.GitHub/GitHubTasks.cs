@@ -29,7 +29,7 @@ namespace Nuke.GitHub
             var newRelease = new NewRelease(releaseTag)
             {
                 TargetCommitish = settings.CommitSha,
-                Name = releaseTag,
+                Name = settings.Name ?? releaseTag,
                 Body = settings.ReleaseNotes,
                 Draft = true,
                 Prerelease = settings.Prerelease ?? false
@@ -62,7 +62,7 @@ namespace Nuke.GitHub
             var updatedRelease = createdRelease.ToUpdate();
             updatedRelease.Draft = false;
             await client.Repository.Release.Edit(settings.RepositoryOwner, settings.RepositoryName, createdRelease.Id, updatedRelease);
-            Logger.Info($"Release {releaseTag} was successfully created");
+            Logger.Info($"Release {settings.Name ?? releaseTag} was successfully created");
         }
 
         public static async Task CreatePullRequest(Configure<GitHubPullRequestSettings> configure)

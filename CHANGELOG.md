@@ -2,6 +2,9 @@
 
 All notable changes to **Nuke.GitHub** are documented here.
 
+## v1.3.2:
+- Add optional configuration to specify the name of the GitHub release
+
 ## v1.3.1:
 - Invoke `AssertValid()` on settings before using them to fail early in case of invalid settings
 - `PublishRelease` will output some status messages to the `Logger`
