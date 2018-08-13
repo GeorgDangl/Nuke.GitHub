@@ -15,6 +15,7 @@ namespace Nuke.GitHub
         public static async Task PublishRelease(Configure<GitHubReleaseSettings> configure)
         {
             var settings = configure.Invoke(new GitHubReleaseSettings());
+            settings.Validate();
             var releaseTag = settings.Tag;
             var client = GetAuthenticatedClient(settings.Token);
             var existingReleases = await client.Repository.Release.GetAll(settings.RepositoryOwner, settings.RepositoryName);
@@ -33,6 +34,7 @@ namespace Nuke.GitHub
                 Draft = true,
                 Prerelease = settings.Prerelease ?? false
             };
+            Logger.Info("Creating release draft...");
             var releaseCreationResult = await client.Repository.Release.Create(settings.RepositoryOwner, settings.RepositoryName, newRelease);
 
             var createdRelease = await client.Repository.Release.Get(settings.RepositoryOwner, settings.RepositoryName, releaseCreationResult.Id);
@@ -51,6 +53,7 @@ namespace Nuke.GitHub
                             RawData = artifactStream,
                         };
 
+                        Logger.Info($"Uploading artifact {artifactPath}...");
                         await client.Repository.Release.UploadAsset(createdRelease, assetUpload);
                     }
                 }
@@ -59,11 +62,13 @@ namespace Nuke.GitHub
             var updatedRelease = createdRelease.ToUpdate();
             updatedRelease.Draft = false;
             await client.Repository.Release.Edit(settings.RepositoryOwner, settings.RepositoryName, createdRelease.Id, updatedRelease);
+            Logger.Info($"Release {releaseTag} was successfully created");
         }
 
         public static async Task CreatePullRequest(Configure<GitHubPullRequestSettings> configure)
         {
             var settings = configure.Invoke(new GitHubPullRequestSettings());
+            settings.Validate();
             var client = GetAuthenticatedClient(settings.Token);
             var repository = await GetRepository(x => settings);
             var pullRequests = await client.Repository.PullRequest.GetAllForRepository(repository.Id,
@@ -81,6 +86,7 @@ namespace Nuke.GitHub
         public static async Task<IReadOnlyList<Release>> GetReleases(Configure<GitHubSettings> configure, int? maxNumberOfReleases)
         {
             var settings = configure.Invoke(new GitHubSettings());
+            settings.Validate();
             var client = GetAuthenticatedClient(settings.Token);
 
             var apiOptions = new ApiOptions { PageSize = maxNumberOfReleases };
@@ -90,6 +96,7 @@ namespace Nuke.GitHub
         public static async Task<Repository> GetRepository(Configure<GitHubSettings> configurator)
         {
             var settings = configurator.Invoke(new GitHubSettings());
+            settings.Validate();
             var client = GetAuthenticatedClient(settings.Token);
             return await client.Repository.Get(settings.RepositoryOwner, settings.RepositoryName);
         }
