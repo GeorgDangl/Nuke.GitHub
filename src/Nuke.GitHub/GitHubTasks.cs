@@ -79,7 +79,11 @@ namespace Nuke.GitHub
                     Base = settings.Base
                 });
 
-            if (pullRequests.Count == 0) Logger.Info($"Pull request from branch '{settings.Head}' into '${settings.Base}' already exists");
+            if (pullRequests.Count == 0)
+            {
+                Logger.Info($"Pull request from branch '{settings.Head}' into '${settings.Base}' already exists");
+                return;
+            }
             await client.PullRequest.Create(repository.Id, new NewPullRequest(settings.Title, settings.Head, settings.Base) { Body = settings.Body });
         }
 
