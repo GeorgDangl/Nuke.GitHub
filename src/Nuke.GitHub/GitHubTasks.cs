@@ -29,7 +29,7 @@ namespace Nuke.GitHub
             var newRelease = new NewRelease(releaseTag)
             {
                 TargetCommitish = settings.CommitSha,
-                Name = releaseTag,
+                Name = settings.Name ?? releaseTag,
                 Body = settings.ReleaseNotes,
                 Draft = true,
                 Prerelease = settings.Prerelease ?? false

@@ -31,6 +31,11 @@
           "help": "The tag that should be used for the release, e.g. \"v1.0.0\""
         },
         {
+          "name": "Name",
+          "type": "string",
+          "help": "The name of the release. If ommited, the value of <see cref=\"Tag\"/> is used"
+        },
+        {
           "name": "CommitSha",
           "type": "string",
           "assertion": "NotNull",
