@@ -79,21 +79,30 @@ namespace Nuke.GitHub
                     Base = settings.Base
                 });
 
-            if (pullRequests.Count == 0)
+            if (pullRequests.Any())
             {
-                Logger.Info($"Pull request from branch '{settings.Head}' into '${settings.Base}' already exists");
+                Logger.Info($"Pull request from branch '{settings.Head}' into '{settings.Base}' already exists");
                 return;
             }
             await client.PullRequest.Create(repository.Id, new NewPullRequest(settings.Title, settings.Head, settings.Base) { Body = settings.Body });
         }
 
-        public static async Task<IReadOnlyList<Release>> GetReleases(Configure<GitHubSettings> configure, int? maxNumberOfReleases)
+        public static async Task<IReadOnlyList<Release>> GetReleases(Configure<GitHubSettings> configure, int? numberOfReleases)
         {
+            ControlFlow.Assert(numberOfReleases == null || numberOfReleases > 0, "numberOfReleases == null || numberOfReleases > 0");
+
             var settings = configure.Invoke(new GitHubSettings());
             settings.Validate();
-            var client = GetAuthenticatedClient(settings.Token);
 
-            var apiOptions = new ApiOptions { PageSize = maxNumberOfReleases };
+            var apiOptions = new ApiOptions();
+            if (numberOfReleases.HasValue)
+            {
+                const int maxPageSize = 100;
+                apiOptions.PageSize = Math.Min(numberOfReleases.Value, maxPageSize);
+                apiOptions.PageCount = (int) Math.Ceiling((double) numberOfReleases.Value / 100);
+            }
+
+            var client = GetAuthenticatedClient(settings.Token);
             return await client.Repository.Release.GetAll(settings.RepositoryOwner, settings.RepositoryName, apiOptions);
         }
 
