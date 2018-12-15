@@ -25,12 +25,14 @@ namespace Nuke.GitHub
 
         public static string EscapeStringPropertyForMsBuild(this string source)
         {
+            // TODO Check MSBuild docs -> Is this just a regular Url escaping?
             return source
                 .Replace(";", "%3B")
                 .Replace(",", "%2C")
                 .Replace(" ", "%20")
                 .Replace("\r", "%0D")
-                .Replace("\n", "%0A");
+                .Replace("\n", "%0A")
+                .Replace("\"", "%22");
         }
     }
 }
