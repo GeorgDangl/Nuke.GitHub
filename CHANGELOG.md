@@ -2,6 +2,9 @@
 
 All notable changes to **Nuke.GitHub** are documented here.
 
+## v1.3.5:
+- Add handling to escape quotation mark `"` to `ChangeLogExtensions`
+
 ## v1.3.3:
 - Return from `CreatePullRequest` if the specified one already exists instead of waiting for the Octokit API to fail
 
