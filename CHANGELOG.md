@@ -3,7 +3,7 @@
 All notable changes to **Nuke.GitHub** are documented here.
 
 ## v1.4.0:
-- Update NUKE to 0.17.0
+- Update NUKE to 0.17.1
 
 ## v1.3.5:
 - Add handling to escape quotation mark `"` to `ChangeLogExtensions`
