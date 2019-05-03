@@ -169,10 +169,18 @@ class Build : NukeBuild
     Target UploadDocumentation => _ => _
         .DependsOn(Push) // To have a relation between pushed package version and published docs version
         .DependsOn(BuildDocumentation)
-        .Requires(() => DocuApiKey)
-        .Requires(() => DocuBaseUrl)
         .Executes(() =>
         {
+            if (string.IsNullOrWhiteSpace(DocuApiKey))
+            {
+                ControlFlow.Fail(nameof(DocuApiKey) + " is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(DocuBaseUrl))
+            {
+                ControlFlow.Fail(nameof(DocuBaseUrl) + " is required");
+            }
+
             WebDocu(s => s
                 .SetDocuBaseUrl(DocuBaseUrl)
                 .SetDocuApiKey(DocuApiKey)
@@ -183,10 +191,14 @@ class Build : NukeBuild
 
     Target PublishGitHubRelease => _ => _
         .DependsOn(Pack)
-        .Requires(() => GitHubAuthenticationToken)
         .OnlyWhenDynamic(() => GitVersion.BranchName.Equals("master") || GitVersion.BranchName.Equals("origin/master"))
         .Executes(async () =>
         {
+            if (string.IsNullOrWhiteSpace(GitHubAuthenticationToken))
+            {
+                ControlFlow.Fail(nameof(GitHubAuthenticationToken) + " is required");
+            }
+
             var releaseTag = $"v{GitVersion.MajorMinorPatch}";
 
             var changeLogSectionEntries = ExtractChangelogSectionNotes(ChangeLogFile);
