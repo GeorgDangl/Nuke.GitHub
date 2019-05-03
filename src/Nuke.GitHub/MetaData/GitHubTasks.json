@@ -1,10 +1,5 @@
 {
   "$schema": "https://raw.githubusercontent.com/nuke-build/nuke/master/source/Nuke.CodeGeneration/schema.json",
-  "license": [
-    "Copyright Georg Dangl 2018.",
-    "Distributed under the MIT License.",
-    "https://github.com/GeorgDangl/Nuke.GitHub/blob/dev/LICENSE.md"
-  ],
   "name": "GitHub",
   "officialUrl": "https://github.com/GeorgDangl/Nuke.GitHub",
   "help": "This class provides different tasks to work with GitHub repositories.",
@@ -27,7 +22,6 @@
         {
           "name": "Tag",
           "type": "string",
-          "assertion": "NotNull",
           "help": "The tag that should be used for the release, e.g. \"v1.0.0\""
         },
         {
@@ -38,7 +32,6 @@
         {
           "name": "CommitSha",
           "type": "string",
-          "assertion": "NotNull",
           "help": "The commit SHA on which to create the release"
         },
         {
@@ -57,19 +50,16 @@
         {
           "name": "Base",
           "type": "string",
-          "assertion": "NotNull",
           "help": "The name of the branch you want the changes pulled into"
         },
         {
           "name": "Head",
           "type": "string",
-          "assertion": "NotNull",
           "help": "The name of the branch where your changes are implemented"
         },
         {
           "name": "Title",
           "type": "string",
-          "assertion": "NotNull",
           "help": "The title of the pull request"
         },
         {
@@ -86,22 +76,26 @@
         {
           "name": "RepositoryOwner",
           "type": "string",
-          "assertion": "NotNull",
           "help": "The account under which the repository is hosted"
         },
         {
           "name": "RepositoryName",
           "type": "string",
-          "assertion": "NotNull",
           "help": "The name of the repository"
         },
         {
           "name": "Token",
           "type": "string",
-          "assertion": "NotNull",
           "help": "The Token for the GitHub API"
         }
       ]
     }
-  ]
+  ],
+  "_metadata": {
+    "licence": [
+      "Copyright Georg Dangl 2019.",
+      "Distributed under the MIT License.",
+      "https://github.com/GeorgDangl/Nuke.GitHub/blob/dev/LICENSE.md"
+    ]
+  }
 }
