@@ -104,11 +104,19 @@ class Build : NukeBuild
 
     Target Push => _ => _
         .DependsOn(Pack)
-        .Requires(() => PublicMyGetSource)
-        .Requires(() => PublicMyGetApiKey)
         .Requires(() => Configuration == Configuration.Release)
         .Executes(() =>
         {
+            if (string.IsNullOrWhiteSpace(PublicMyGetSource))
+            {
+                ControlFlow.Fail(nameof(PublicMyGetSource) + " is required");
+            }
+            
+            if (string.IsNullOrWhiteSpace(PublicMyGetApiKey))
+            {
+                ControlFlow.Fail(nameof(PublicMyGetApiKey) + " is required");
+            }
+
             GlobFiles(OutputDirectory, "*.nupkg").NotEmpty()
                 .Where(x => !x.EndsWith("symbols.nupkg"))
                 .ForEach(x =>
