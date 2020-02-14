@@ -2,6 +2,9 @@
 
 All notable changes to **Nuke.GitHub** are documented here.
 
+## v1.6.0:
+- Update NUKE to 0.24.1
+
 ## v1.5.0:
 - Update NUKE to 0.19.0
 

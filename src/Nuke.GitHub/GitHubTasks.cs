@@ -7,6 +7,7 @@ using Nuke.Common.Git;
 using Nuke.Common;
 using Nuke.Common.Tooling;
 using Octokit;
+using Nuke.Common.Tools.GitHub;
 
 namespace Nuke.GitHub
 {

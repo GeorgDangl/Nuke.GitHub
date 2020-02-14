@@ -8,7 +8,6 @@ using Nuke.WebDocu;
 using System;
 using System.IO;
 using System.Linq;
-using static Nuke.CodeGeneration.CodeGenerator;
 using static Nuke.Common.ChangeLog.ChangelogTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.EnvironmentInfo;
@@ -17,10 +16,12 @@ using static Nuke.Common.IO.PathConstruction;
 using static Nuke.GitHub.ChangeLogExtensions;
 using static Nuke.GitHub.GitHubTasks;
 using static Nuke.WebDocu.WebDocuTasks;
-using Nuke.Azure.KeyVault;
-using static Nuke.DocFX.DocFXTasks;
-using Nuke.DocFX;
+using Nuke.Common.Tools.AzureKeyVault.Attributes;
+using static Nuke.Common.Tools.DocFX.DocFXTasks;
+using Nuke.Common.Tools.DocFX;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.IO;
+using static Nuke.CodeGeneration.CodeGenerator;
 
 class Build : NukeBuild
 {
@@ -78,7 +79,7 @@ class Build : NukeBuild
             DotNetBuild(x => x
                 .SetConfiguration(Configuration)
                 .EnableNoRestore()
-                .SetFileVersion(GitVersion.GetNormalizedFileVersion())
+                .SetFileVersion(GitVersion.AssemblySemFileVer)
                 .SetAssemblyVersion(GitVersion.AssemblySemVer)
                 .SetInformationalVersion(GitVersion.InformationalVersion));
         });
