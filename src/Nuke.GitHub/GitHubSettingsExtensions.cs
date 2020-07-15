@@ -63,5 +63,24 @@ namespace Nuke.GitHub
             return toolSettings;
         }
         #endregion
-    }
+        #region GitHub Enterprise URL
+        /// <summary><p><em>Sets <see cref="GitHubSettings.Url"/>.</em></p><p>The GitHub Enterprise URL</p></summary>
+        [Pure]
+        public static T SetGitHubEnterpriseUrl<T>(this T toolSettings, string url) where T : GitHubSettings
+        {
+          var x = new GitHubReleaseSettings();
+          toolSettings = toolSettings.NewInstance();
+          toolSettings.Url = url;
+          return toolSettings;
+        }
+        /// <summary><p><em>Resets <see cref="GitHubSettings.Url"/>.</em></p><p>The GitHub Enterprise URL</p></summary>
+        [Pure]
+        public static T ResetGitHubEnterpriseUrl<T>(this T toolSettings) where T : GitHubSettings
+        {
+          toolSettings = toolSettings.NewInstance();
+          toolSettings.Url = null;
+          return toolSettings;
+        }
+        #endregion
+  }
 }

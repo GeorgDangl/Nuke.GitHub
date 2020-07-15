@@ -18,7 +18,7 @@ namespace Nuke.GitHub
             var settings = configure.Invoke(new GitHubReleaseSettings());
             settings.Validate();
             var releaseTag = settings.Tag;
-            var client = GetAuthenticatedClient(settings.Token);
+            var client = GetAuthenticatedClient(settings.Token, settings.Url);
             var existingReleases = await client.Repository.Release.GetAll(settings.RepositoryOwner, settings.RepositoryName);
 
             if (existingReleases.Any(r => r.TagName == releaseTag))
@@ -70,7 +70,7 @@ namespace Nuke.GitHub
         {
             var settings = configure.Invoke(new GitHubPullRequestSettings());
             settings.Validate();
-            var client = GetAuthenticatedClient(settings.Token);
+            var client = GetAuthenticatedClient(settings.Token, settings.Url);
             var repository = await GetRepository(x => settings);
             var pullRequests = await client.Repository.PullRequest.GetAllForRepository(repository.Id,
                 new PullRequestRequest
@@ -103,7 +103,7 @@ namespace Nuke.GitHub
                 apiOptions.PageCount = (int) Math.Ceiling((double) numberOfReleases.Value / 100);
             }
 
-            var client = GetAuthenticatedClient(settings.Token);
+            var client = GetAuthenticatedClient(settings.Token, settings.Url);
             return await client.Repository.Release.GetAll(settings.RepositoryOwner, settings.RepositoryName, apiOptions);
         }
 
@@ -111,17 +111,28 @@ namespace Nuke.GitHub
         {
             var settings = configurator.Invoke(new GitHubSettings());
             settings.Validate();
-            var client = GetAuthenticatedClient(settings.Token);
+            var client = GetAuthenticatedClient(settings.Token, settings.Url);
             return await client.Repository.Get(settings.RepositoryOwner, settings.RepositoryName);
         }
 
-        static GitHubClient GetAuthenticatedClient(string token)
+        static GitHubClient GetAuthenticatedClient(string token, string url)
         {
-            var client = new GitHubClient(new ProductHeaderValue("dangl-bot"))
+            if (String.IsNullOrEmpty(url))
             {
+             return new GitHubClient(new ProductHeaderValue("dangl-bot"), new Uri(url))
+              {
+
                 Credentials = new Credentials(token)
-            };
-            return client;
+              };
+            }
+            else
+            {
+              return new GitHubClient(new ProductHeaderValue("dangl-bot"), new Uri(url))
+              {
+
+                Credentials = new Credentials(token)
+              };
+            }           
         }
 
         public static (string gitHubOwner, string repositoryName) GetGitHubRepositoryInfo(GitRepository gitRepository)
