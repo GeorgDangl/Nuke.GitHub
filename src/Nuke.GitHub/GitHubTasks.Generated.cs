@@ -101,7 +101,11 @@ namespace Nuke.GitHub
         ///   The Token for the GitHub API
         /// </summary>
         public virtual string Token { get; internal set; }
-    }
+        /// <summary>
+        ///   The URL for GitHub Enterprise 
+        /// </summary>
+        public virtual string Url { get; internal set; }
+  }
     #endregion
     #region GitHubReleaseSettingsExtensions
     /// <summary>
