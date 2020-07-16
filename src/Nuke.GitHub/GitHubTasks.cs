@@ -119,7 +119,7 @@ namespace Nuke.GitHub
         {
             if (String.IsNullOrEmpty(url))
             {
-             return new GitHubClient(new ProductHeaderValue("dangl-bot"), new Uri(url))
+             return new GitHubClient(new ProductHeaderValue("dangl-bot"))
               {
 
                 Credentials = new Credentials(token)
@@ -142,5 +142,10 @@ namespace Nuke.GitHub
             var split = gitRepository.Identifier.Split('/');
             return (split[0], split[1]);
         }
-    }
+        public static (string gitHubOwner, string repositoryName) GetGitHubEnterpriseRepositoryInfo(GitRepository gitRepository)
+        {
+          var split = gitRepository.Identifier.Split('/');
+          return (split[0], split[1]);
+        }
+  }
 }
