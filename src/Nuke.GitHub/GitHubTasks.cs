@@ -121,7 +121,6 @@ namespace Nuke.GitHub
             {
              return new GitHubClient(new ProductHeaderValue("dangl-bot"))
               {
-
                 Credentials = new Credentials(token)
               };
             }
@@ -129,7 +128,6 @@ namespace Nuke.GitHub
             {
               return new GitHubClient(new ProductHeaderValue("dangl-bot"), new Uri(url))
               {
-
                 Credentials = new Credentials(token)
               };
             }           
@@ -137,11 +135,11 @@ namespace Nuke.GitHub
 
         public static (string gitHubOwner, string repositoryName) GetGitHubRepositoryInfo(GitRepository gitRepository)
         {
-            ControlFlow.Assert(gitRepository.IsGitHubRepository(), $"The {nameof(gitRepository)} parameter must reference a GitHub repository.");   
-
+            ControlFlow.Assert(gitRepository.IsGitHubRepository(), $"The {nameof(gitRepository)} parameter must reference a GitHub repository.");
             var split = gitRepository.Identifier.Split('/');
             return (split[0], split[1]);
         }
+        
         public static (string gitHubOwner, string repositoryName) GetGitHubEnterpriseRepositoryInfo(GitRepository gitRepository)
         {
           var split = gitRepository.Identifier.Split('/');
