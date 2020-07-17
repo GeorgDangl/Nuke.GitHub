@@ -87,6 +87,11 @@
           "name": "Token",
           "type": "string",
           "help": "The Token for the GitHub API"
+        },
+        {
+          "name": "Url",
+          "type": "string",
+          "help": "The URL for GitHub Enterprise"
         }
       ]
     }

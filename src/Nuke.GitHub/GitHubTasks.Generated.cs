@@ -1,4 +1,3 @@
-// Generated with Nuke.CodeGeneration version 0.17.1 (Windows,.NETStandard,Version=v2.0)
 
 using JetBrains.Annotations;
 using Newtonsoft.Json;
@@ -102,10 +101,10 @@ namespace Nuke.GitHub
         /// </summary>
         public virtual string Token { get; internal set; }
         /// <summary>
-        ///   The URL for GitHub Enterprise 
+        ///   The URL for GitHub Enterprise
         /// </summary>
         public virtual string Url { get; internal set; }
-  }
+    }
     #endregion
     #region GitHubReleaseSettingsExtensions
     /// <summary>
@@ -121,7 +120,7 @@ namespace Nuke.GitHub
         ///   <p>Optional file paths for files that should be appended to a release</p>
         /// </summary>
         [Pure]
-        public static GitHubReleaseSettings SetArtifactPaths(this GitHubReleaseSettings toolSettings, string[] artifactPaths)
+        public static T SetArtifactPaths<T>(this T toolSettings, string[] artifactPaths) where T : GitHubReleaseSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.ArtifactPaths = artifactPaths;
@@ -132,7 +131,7 @@ namespace Nuke.GitHub
         ///   <p>Optional file paths for files that should be appended to a release</p>
         /// </summary>
         [Pure]
-        public static GitHubReleaseSettings ResetArtifactPaths(this GitHubReleaseSettings toolSettings)
+        public static T ResetArtifactPaths<T>(this T toolSettings) where T : GitHubReleaseSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.ArtifactPaths = null;
@@ -145,7 +144,7 @@ namespace Nuke.GitHub
         ///   <p>The message for the GitHub release</p>
         /// </summary>
         [Pure]
-        public static GitHubReleaseSettings SetReleaseNotes(this GitHubReleaseSettings toolSettings, string releaseNotes)
+        public static T SetReleaseNotes<T>(this T toolSettings, string releaseNotes) where T : GitHubReleaseSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.ReleaseNotes = releaseNotes;
@@ -156,7 +155,7 @@ namespace Nuke.GitHub
         ///   <p>The message for the GitHub release</p>
         /// </summary>
         [Pure]
-        public static GitHubReleaseSettings ResetReleaseNotes(this GitHubReleaseSettings toolSettings)
+        public static T ResetReleaseNotes<T>(this T toolSettings) where T : GitHubReleaseSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.ReleaseNotes = null;
@@ -169,7 +168,7 @@ namespace Nuke.GitHub
         ///   <p>The tag that should be used for the release, e.g. "v1.0.0"</p>
         /// </summary>
         [Pure]
-        public static GitHubReleaseSettings SetTag(this GitHubReleaseSettings toolSettings, string tag)
+        public static T SetTag<T>(this T toolSettings, string tag) where T : GitHubReleaseSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Tag = tag;
@@ -180,7 +179,7 @@ namespace Nuke.GitHub
         ///   <p>The tag that should be used for the release, e.g. "v1.0.0"</p>
         /// </summary>
         [Pure]
-        public static GitHubReleaseSettings ResetTag(this GitHubReleaseSettings toolSettings)
+        public static T ResetTag<T>(this T toolSettings) where T : GitHubReleaseSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Tag = null;
@@ -193,7 +192,7 @@ namespace Nuke.GitHub
         ///   <p>The name of the release. If ommited, the value of <see cref="Tag"/> is used</p>
         /// </summary>
         [Pure]
-        public static GitHubReleaseSettings SetName(this GitHubReleaseSettings toolSettings, string name)
+        public static T SetName<T>(this T toolSettings, string name) where T : GitHubReleaseSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Name = name;
@@ -204,7 +203,7 @@ namespace Nuke.GitHub
         ///   <p>The name of the release. If ommited, the value of <see cref="Tag"/> is used</p>
         /// </summary>
         [Pure]
-        public static GitHubReleaseSettings ResetName(this GitHubReleaseSettings toolSettings)
+        public static T ResetName<T>(this T toolSettings) where T : GitHubReleaseSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Name = null;
@@ -217,7 +216,7 @@ namespace Nuke.GitHub
         ///   <p>The commit SHA on which to create the release</p>
         /// </summary>
         [Pure]
-        public static GitHubReleaseSettings SetCommitSha(this GitHubReleaseSettings toolSettings, string commitSha)
+        public static T SetCommitSha<T>(this T toolSettings, string commitSha) where T : GitHubReleaseSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.CommitSha = commitSha;
@@ -228,7 +227,7 @@ namespace Nuke.GitHub
         ///   <p>The commit SHA on which to create the release</p>
         /// </summary>
         [Pure]
-        public static GitHubReleaseSettings ResetCommitSha(this GitHubReleaseSettings toolSettings)
+        public static T ResetCommitSha<T>(this T toolSettings) where T : GitHubReleaseSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.CommitSha = null;
@@ -241,7 +240,7 @@ namespace Nuke.GitHub
         ///   <p>Whether this is a pre-release</p>
         /// </summary>
         [Pure]
-        public static GitHubReleaseSettings SetPrerelease(this GitHubReleaseSettings toolSettings, bool? prerelease)
+        public static T SetPrerelease<T>(this T toolSettings, bool? prerelease) where T : GitHubReleaseSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Prerelease = prerelease;
@@ -252,7 +251,7 @@ namespace Nuke.GitHub
         ///   <p>Whether this is a pre-release</p>
         /// </summary>
         [Pure]
-        public static GitHubReleaseSettings ResetPrerelease(this GitHubReleaseSettings toolSettings)
+        public static T ResetPrerelease<T>(this T toolSettings) where T : GitHubReleaseSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Prerelease = null;
@@ -263,7 +262,7 @@ namespace Nuke.GitHub
         ///   <p>Whether this is a pre-release</p>
         /// </summary>
         [Pure]
-        public static GitHubReleaseSettings EnablePrerelease(this GitHubReleaseSettings toolSettings)
+        public static T EnablePrerelease<T>(this T toolSettings) where T : GitHubReleaseSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Prerelease = true;
@@ -274,7 +273,7 @@ namespace Nuke.GitHub
         ///   <p>Whether this is a pre-release</p>
         /// </summary>
         [Pure]
-        public static GitHubReleaseSettings DisablePrerelease(this GitHubReleaseSettings toolSettings)
+        public static T DisablePrerelease<T>(this T toolSettings) where T : GitHubReleaseSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Prerelease = false;
@@ -285,7 +284,7 @@ namespace Nuke.GitHub
         ///   <p>Whether this is a pre-release</p>
         /// </summary>
         [Pure]
-        public static GitHubReleaseSettings TogglePrerelease(this GitHubReleaseSettings toolSettings)
+        public static T TogglePrerelease<T>(this T toolSettings) where T : GitHubReleaseSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Prerelease = !toolSettings.Prerelease;
@@ -308,7 +307,7 @@ namespace Nuke.GitHub
         ///   <p>The name of the branch you want the changes pulled into</p>
         /// </summary>
         [Pure]
-        public static GitHubPullRequestSettings SetBase(this GitHubPullRequestSettings toolSettings, string @base)
+        public static T SetBase<T>(this T toolSettings, string @base) where T : GitHubPullRequestSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Base = @base;
@@ -319,7 +318,7 @@ namespace Nuke.GitHub
         ///   <p>The name of the branch you want the changes pulled into</p>
         /// </summary>
         [Pure]
-        public static GitHubPullRequestSettings ResetBase(this GitHubPullRequestSettings toolSettings)
+        public static T ResetBase<T>(this T toolSettings) where T : GitHubPullRequestSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Base = null;
@@ -332,7 +331,7 @@ namespace Nuke.GitHub
         ///   <p>The name of the branch where your changes are implemented</p>
         /// </summary>
         [Pure]
-        public static GitHubPullRequestSettings SetHead(this GitHubPullRequestSettings toolSettings, string head)
+        public static T SetHead<T>(this T toolSettings, string head) where T : GitHubPullRequestSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Head = head;
@@ -343,7 +342,7 @@ namespace Nuke.GitHub
         ///   <p>The name of the branch where your changes are implemented</p>
         /// </summary>
         [Pure]
-        public static GitHubPullRequestSettings ResetHead(this GitHubPullRequestSettings toolSettings)
+        public static T ResetHead<T>(this T toolSettings) where T : GitHubPullRequestSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Head = null;
@@ -356,7 +355,7 @@ namespace Nuke.GitHub
         ///   <p>The title of the pull request</p>
         /// </summary>
         [Pure]
-        public static GitHubPullRequestSettings SetTitle(this GitHubPullRequestSettings toolSettings, string title)
+        public static T SetTitle<T>(this T toolSettings, string title) where T : GitHubPullRequestSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Title = title;
@@ -367,7 +366,7 @@ namespace Nuke.GitHub
         ///   <p>The title of the pull request</p>
         /// </summary>
         [Pure]
-        public static GitHubPullRequestSettings ResetTitle(this GitHubPullRequestSettings toolSettings)
+        public static T ResetTitle<T>(this T toolSettings) where T : GitHubPullRequestSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Title = null;
@@ -380,7 +379,7 @@ namespace Nuke.GitHub
         ///   <p>The optional contents of the pull request</p>
         /// </summary>
         [Pure]
-        public static GitHubPullRequestSettings SetBody(this GitHubPullRequestSettings toolSettings, string body)
+        public static T SetBody<T>(this T toolSettings, string body) where T : GitHubPullRequestSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Body = body;
@@ -391,7 +390,7 @@ namespace Nuke.GitHub
         ///   <p>The optional contents of the pull request</p>
         /// </summary>
         [Pure]
-        public static GitHubPullRequestSettings ResetBody(this GitHubPullRequestSettings toolSettings)
+        public static T ResetBody<T>(this T toolSettings) where T : GitHubPullRequestSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Body = null;
@@ -414,7 +413,7 @@ namespace Nuke.GitHub
         ///   <p>The account under which the repository is hosted</p>
         /// </summary>
         [Pure]
-        public static GitHubSettings SetRepositoryOwner(this GitHubSettings toolSettings, string repositoryOwner)
+        public static T SetRepositoryOwner<T>(this T toolSettings, string repositoryOwner) where T : GitHubSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.RepositoryOwner = repositoryOwner;
@@ -425,7 +424,7 @@ namespace Nuke.GitHub
         ///   <p>The account under which the repository is hosted</p>
         /// </summary>
         [Pure]
-        public static GitHubSettings ResetRepositoryOwner(this GitHubSettings toolSettings)
+        public static T ResetRepositoryOwner<T>(this T toolSettings) where T : GitHubSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.RepositoryOwner = null;
@@ -438,7 +437,7 @@ namespace Nuke.GitHub
         ///   <p>The name of the repository</p>
         /// </summary>
         [Pure]
-        public static GitHubSettings SetRepositoryName(this GitHubSettings toolSettings, string repositoryName)
+        public static T SetRepositoryName<T>(this T toolSettings, string repositoryName) where T : GitHubSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.RepositoryName = repositoryName;
@@ -449,7 +448,7 @@ namespace Nuke.GitHub
         ///   <p>The name of the repository</p>
         /// </summary>
         [Pure]
-        public static GitHubSettings ResetRepositoryName(this GitHubSettings toolSettings)
+        public static T ResetRepositoryName<T>(this T toolSettings) where T : GitHubSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.RepositoryName = null;
@@ -462,7 +461,7 @@ namespace Nuke.GitHub
         ///   <p>The Token for the GitHub API</p>
         /// </summary>
         [Pure]
-        public static GitHubSettings SetToken(this GitHubSettings toolSettings, string token)
+        public static T SetToken<T>(this T toolSettings, string token) where T : GitHubSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Token = token;
@@ -473,10 +472,34 @@ namespace Nuke.GitHub
         ///   <p>The Token for the GitHub API</p>
         /// </summary>
         [Pure]
-        public static GitHubSettings ResetToken(this GitHubSettings toolSettings)
+        public static T ResetToken<T>(this T toolSettings) where T : GitHubSettings
         {
             toolSettings = toolSettings.NewInstance();
             toolSettings.Token = null;
+            return toolSettings;
+        }
+        #endregion
+        #region Url
+        /// <summary>
+        ///   <p><em>Sets <see cref="GitHubSettings.Url"/></em></p>
+        ///   <p>The URL for GitHub Enterprise</p>
+        /// </summary>
+        [Pure]
+        public static T SetUrl<T>(this T toolSettings, string url) where T : GitHubSettings
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Url = url;
+            return toolSettings;
+        }
+        /// <summary>
+        ///   <p><em>Resets <see cref="GitHubSettings.Url"/></em></p>
+        ///   <p>The URL for GitHub Enterprise</p>
+        /// </summary>
+        [Pure]
+        public static T ResetUrl<T>(this T toolSettings) where T : GitHubSettings
+        {
+            toolSettings = toolSettings.NewInstance();
+            toolSettings.Url = null;
             return toolSettings;
         }
         #endregion
