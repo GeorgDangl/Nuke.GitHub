@@ -2,6 +2,12 @@
 
 All notable changes to **Nuke.GitHub** are documented here.
 
+## v1.6.2:
+- Update internal dependencies and regenerate code
+
+## v1.6.1:
+- Add support for custom urls to support GitHub Enterprise
+
 ## v1.6.0:
 - Update NUKE to 0.24.1
 

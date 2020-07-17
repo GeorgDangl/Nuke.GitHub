@@ -10,13 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nuke.CodeGeneration" Version="0.24.1" />
-    <PackageReference Include="Nuke.Common" Version="0.24.1" />
+    <PackageReference Include="Nuke.CodeGeneration" Version="0.24.11" />
+    <PackageReference Include="Nuke.Common" Version="0.24.11" />
     <PackageDownload Include="GitVersion.Tool" Version="[5.1.1]" />
-    <PackageReference Include="docfx.console" Version="2.48.1">
+    <PackageReference Include="docfx.console" Version="2.56.1">
       <ExcludeAssets>build</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Nuke.WebDocu" Version="1.5.0-beta0006" />
+    <PackageReference Include="Nuke.WebDocu" Version="1.6.0" />
   </ItemGroup>
 
   <ItemGroup>
