@@ -220,10 +220,8 @@ class Build : NukeBuild
     Target Generate => _ => _
         .Executes(() =>
         {
-            GenerateCode(
-                specificationDirectory: RootDirectory / "src" / "Nuke.GitHub" / "MetaData",
-                namespaceProvider: x => "Nuke.GitHub",
-                outputFileProvider: x => RootDirectory / "src" / "Nuke.GitHub" / "GitHubTasks.Generated.cs"
-            );
+            GenerateCodeFromDirectory(RootDirectory / "src" / "Nuke.GitHub" / "MetaData",
+                outputFileProvider: x => RootDirectory / "src" / "Nuke.GitHub" / "GitHubTasks.Generated.cs",
+                namespaceProvider: x => "Nuke.GitHub");
         });
 }
