@@ -40,7 +40,7 @@ class Build : NukeBuild
     [GitVersion] readonly GitVersion GitVersion;
     [GitRepository] readonly GitRepository GitRepository;
 
-    [Parameter] readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+    [Parameter] readonly string Configuration = IsLocalBuild ? "Debug" : "Release";
 
     [KeyVaultSecret] string DocuBaseUrl;
     [KeyVaultSecret] string GitHubAuthenticationToken;
@@ -102,7 +102,7 @@ class Build : NukeBuild
 
     Target Push => _ => _
         .DependsOn(Pack)
-        .Requires(() => Configuration == Configuration.Release)
+        .Requires(() => Configuration == "Release")
         .Executes(() =>
         {
             if (string.IsNullOrWhiteSpace(PublicMyGetSource))
