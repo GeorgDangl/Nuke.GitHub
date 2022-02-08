@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <RootNamespace></RootNamespace>
     <IsPackable>False</IsPackable>
@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Nuke.CodeGeneration" Version="5.0.0" />
-    <PackageReference Include="Nuke.Common" Version="5.0.0" />
+    <PackageReference Include="Nuke.Common" Version="6.0.1" />
     <PackageDownload Include="GitVersion.Tool" Version="[5.1.1]" />
     <PackageReference Include="docfx.console" Version="2.56.5">
       <ExcludeAssets>build</ExcludeAssets>
@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <NukeMetadata Include="**/*.json" Exclude="bin/**;obj/**" />
-    <None Remove="*.csproj.DotSettings;*.ref.*.txt" />
   </ItemGroup>
 
   <ItemGroup>
