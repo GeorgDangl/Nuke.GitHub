@@ -122,6 +122,7 @@ class Build : NukeBuild
                 packages.ForEach(x =>
                 {
                     DotNetNuGetPush(s => s
+                        .EnableSkipDuplicate()
                         .SetTargetPath(x)
                         .SetSource(PublicMyGetSource)
                         .SetApiKey(PublicMyGetApiKey));
@@ -180,6 +181,7 @@ class Build : NukeBuild
             }
 
             WebDocu(s => s
+                .SetSkipForVersionConflicts(true)
                 .SetDocuBaseUrl(DocuBaseUrl)
                 .SetDocuApiKey(DocuApiKey)
                 .SetSourceDirectory(OutputDirectory / "docs")
