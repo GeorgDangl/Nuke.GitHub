@@ -2,8 +2,6 @@
 
 [![Build Status](https://jenkins.dangl.me/buildStatus/icon?job=GeorgDangl%2FNuke.GitHub%2Fdevelop)](https://jenkins.dangl.me/job/GeorgDangl/job/Nuke.GitHub/job/develop/)
 
-[![Built with Nuke](http://nuke.build/rounded)](https://www.nuke.build)
-
 ![NuGet](https://img.shields.io/nuget/v/Nuke.GitHub.svg)
 [![MyGet](https://img.shields.io/myget/dangl/v/Nuke.GitHub.svg)]()
 

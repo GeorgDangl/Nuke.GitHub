@@ -107,19 +107,22 @@ class Build : NukeBuild
         {
             if (string.IsNullOrWhiteSpace(PublicMyGetSource))
             {
-                ControlFlow.Fail(nameof(PublicMyGetSource) + " is required");
+                Assert.Fail(nameof(PublicMyGetSource) + " is required");
             }
             
             if (string.IsNullOrWhiteSpace(PublicMyGetApiKey))
             {
-                ControlFlow.Fail(nameof(PublicMyGetApiKey) + " is required");
+                Assert.Fail(nameof(PublicMyGetApiKey) + " is required");
             }
 
-            GlobFiles(OutputDirectory, "*.nupkg").NotEmpty()
+            var packages = GlobFiles(OutputDirectory, "*.nupkg")
                 .Where(x => !x.EndsWith("symbols.nupkg"))
-                .ForEach(x =>
+                .ToList();
+            Assert.NotEmpty(packages);
+                packages.ForEach(x =>
                 {
                     DotNetNuGetPush(s => s
+                        .EnableSkipDuplicate()
                         .SetTargetPath(x)
                         .SetSource(PublicMyGetSource)
                         .SetApiKey(PublicMyGetApiKey));
@@ -128,9 +131,7 @@ class Build : NukeBuild
             if (GitVersion.BranchName.Equals("master") || GitVersion.BranchName.Equals("origin/master"))
             {
                 // Stable releases are published to NuGet
-                GlobFiles(OutputDirectory, "*.nupkg").NotEmpty()
-                    .Where(x => !x.EndsWith("symbols.nupkg"))
-                    .ForEach(x => DotNetNuGetPush(s => s
+                    packages.ForEach(x => DotNetNuGetPush(s => s
                         .SetTargetPath(x)
                         .SetSource("https://api.nuget.org/v3/index.json")
                         .SetApiKey(NuGetApiKey)));
@@ -171,15 +172,16 @@ class Build : NukeBuild
         {
             if (string.IsNullOrWhiteSpace(DocuApiKey))
             {
-                ControlFlow.Fail(nameof(DocuApiKey) + " is required");
+                Assert.Fail(nameof(DocuApiKey) + " is required");
             }
 
             if (string.IsNullOrWhiteSpace(DocuBaseUrl))
             {
-                ControlFlow.Fail(nameof(DocuBaseUrl) + " is required");
+                Assert.Fail(nameof(DocuBaseUrl) + " is required");
             }
 
             WebDocu(s => s
+                .SetSkipForVersionConflicts(true)
                 .SetDocuBaseUrl(DocuBaseUrl)
                 .SetDocuApiKey(DocuApiKey)
                 .SetSourceDirectory(OutputDirectory / "docs")
@@ -194,7 +196,7 @@ class Build : NukeBuild
         {
             if (string.IsNullOrWhiteSpace(GitHubAuthenticationToken))
             {
-                ControlFlow.Fail(nameof(GitHubAuthenticationToken) + " is required");
+                Assert.Fail(nameof(GitHubAuthenticationToken) + " is required");
             }
 
             var releaseTag = $"v{GitVersion.MajorMinorPatch}";
@@ -206,8 +208,11 @@ class Build : NukeBuild
 
             var repositoryInfo = GetGitHubRepositoryInfo(GitRepository);
 
+            var packages = GlobFiles(OutputDirectory, "*.nupkg").ToArray();
+            Assert.NotEmpty(packages);
+
             await PublishRelease(x => x
-                    .SetArtifactPaths(GlobFiles(OutputDirectory, "*.nupkg").NotEmpty().ToArray())
+                    .SetArtifactPaths(packages)
                     .SetCommitSha(GitVersion.Sha)
                     .SetReleaseNotes(completeChangeLog)
                     .SetRepositoryName(repositoryInfo.repositoryName)

@@ -35,7 +35,7 @@ namespace Nuke.GitHub
                 Draft = true,
                 Prerelease = settings.Prerelease ?? false
             };
-            Logger.Info("Creating release draft...");
+            Serilog.Log.Information("Creating release draft...");
             var releaseCreationResult = await client.Repository.Release.Create(settings.RepositoryOwner, settings.RepositoryName, newRelease);
 
             var createdRelease = await client.Repository.Release.Get(settings.RepositoryOwner, settings.RepositoryName, releaseCreationResult.Id);
@@ -54,7 +54,7 @@ namespace Nuke.GitHub
                             RawData = artifactStream,
                         };
 
-                        Logger.Info($"Uploading artifact {artifactPath}...");
+                        Serilog.Log.Information($"Uploading artifact {artifactPath}...");
                         await client.Repository.Release.UploadAsset(createdRelease, assetUpload);
                     }
                 }
@@ -63,7 +63,7 @@ namespace Nuke.GitHub
             var updatedRelease = createdRelease.ToUpdate();
             updatedRelease.Draft = false;
             await client.Repository.Release.Edit(settings.RepositoryOwner, settings.RepositoryName, createdRelease.Id, updatedRelease);
-            Logger.Info($"Release {settings.Name ?? releaseTag} was successfully created");
+            Serilog.Log.Information($"Release {settings.Name ?? releaseTag} was successfully created");
         }
 
         public static async Task CreatePullRequest(Configure<GitHubPullRequestSettings> configure)
@@ -82,7 +82,7 @@ namespace Nuke.GitHub
 
             if (pullRequests.Any())
             {
-                Logger.Info($"Pull request from branch '{settings.Head}' into '{settings.Base}' already exists");
+                Serilog.Log.Information($"Pull request from branch '{settings.Head}' into '{settings.Base}' already exists");
                 return;
             }
             await client.PullRequest.Create(repository.Id, new NewPullRequest(settings.Title, settings.Head, settings.Base) { Body = settings.Body });
@@ -90,7 +90,7 @@ namespace Nuke.GitHub
 
         public static async Task<IReadOnlyList<Release>> GetReleases(Configure<GitHubSettings> configure, int? numberOfReleases)
         {
-            ControlFlow.Assert(numberOfReleases == null || numberOfReleases > 0, "numberOfReleases == null || numberOfReleases > 0");
+            Assert.True(numberOfReleases == null || numberOfReleases > 0, "numberOfReleases == null || numberOfReleases > 0");
 
             var settings = configure.Invoke(new GitHubSettings());
             settings.Validate();
@@ -135,7 +135,7 @@ namespace Nuke.GitHub
 
         public static (string gitHubOwner, string repositoryName) GetGitHubRepositoryInfo(GitRepository gitRepository)
         {
-            ControlFlow.Assert(gitRepository.IsGitHubRepository(), $"The {nameof(gitRepository)} parameter must reference a GitHub repository.");
+            Assert.True(gitRepository.IsGitHubRepository(), $"The {nameof(gitRepository)} parameter must reference a GitHub repository.");
             var split = gitRepository.Identifier.Split('/');
             return (split[0], split[1]);
         }
