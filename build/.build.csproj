@@ -18,6 +18,10 @@
       <ExcludeAssets>build</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="Nuke.WebDocu" Version="4.0.0-beta0001" />
+    <!-- The references below are required to compiled the embedded files from
+         the separate Nuke.GitHub project itself -->
+    <PackageReference Include="Octokit" Version="0.50.0" />
+    <PackageReference Include="Nuke.Common" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,7 +29,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Nuke.GitHub\Nuke.GitHub.csproj" />
+    <!-- By linking the files here, we're not having any trouble with locked dlls
+         during the build process -->
+    <Compile  Include="..\src\Nuke.GitHub\**\*.cs">
+      <Link>NukeGitHub\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Compile >
+    <Compile Remove="..\src\Nuke.GitHub\obj\**" />
+    <Compile Remove="..\src\Nuke.GitHub\bin\**" />
   </ItemGroup>
 
 </Project>
