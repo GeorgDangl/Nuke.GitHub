@@ -233,12 +233,14 @@ class Build : NukeBuild
                 }
 
                 File.Copy(SolutionDirectory / "README.md", docsPath / "index.md", overwrite: true);
+                File.Copy(SolutionDirectory / "LICENSE.md", docsPath / "LICENSE.md", overwrite: true);
                 File.Copy(SolutionDirectory / "app-logo.png", docsPath / "app-logo.png", overwrite: true);
                 File.Copy(NukeGitHubChangeLogFile, docsPath / "CHANGELOG_GitHub.md", overwrite: true);
                 File.Copy(NukeWebDocuChangeLogFile, docsPath / "CHANGELOG_WebDocu.md", overwrite: true);
 
                 DocFXBuild(x => x.SetConfigFile(config));
 
+                File.Delete(docsPath / "LICENSE.md");
                 File.Delete(docsPath / "index.md");
                 File.Delete(docsPath / "app-logo.png");
                 File.Delete(docsPath / "CHANGELOG_GitHub.md");

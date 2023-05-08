@@ -47,6 +47,9 @@
         "KeyVaultClientSecret": {
           "type": "string"
         },
+        "KeyVaultTenantId": {
+          "type": "string"
+        },
         "NoLogo": {
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"
