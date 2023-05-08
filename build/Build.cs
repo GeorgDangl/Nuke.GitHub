@@ -272,6 +272,7 @@ class Build : NukeBuild
 
             WebDocu(s => s
                 .SetSkipForVersionConflicts(true)
+                .SetMarkdownChangelog(File.ReadAllText(NukeGitHubChangeLogFile))
                 .SetDocuBaseUrl(DocuBaseUrl)
                 .SetDocuApiKey(NukeGitHubDocuApiKey)
                 .SetSourceDirectory(OutputDirectory / "docs_github")
@@ -279,6 +280,7 @@ class Build : NukeBuild
 
             WebDocu(s => s
                 .SetSkipForVersionConflicts(true)
+                .SetMarkdownChangelog(File.ReadAllText(NukeWebDocuChangeLogFile))
                 .SetDocuBaseUrl(DocuBaseUrl)
                 .SetDocuApiKey(NukeWebDocuDocuApiKey)
                 .SetSourceDirectory(OutputDirectory / "docs_webdocu")
