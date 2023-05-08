@@ -1,4 +1,4 @@
-﻿using Nuke.Common;
+using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
@@ -77,13 +77,20 @@ class Build : NukeBuild
     {
         if (!string.IsNullOrWhiteSpace(DanglCiCdTeamsWebhookUrl))
         {
-            var themeColor = isError ? "f44336" : "00acc1";
-            TeamsTasks
-                .SendTeamsMessage(m => m
-                    .SetTitle(title)
-                    .SetText(message)
-                    .SetThemeColor(themeColor),
-                    DanglCiCdTeamsWebhookUrl);
+            try
+            {
+                var themeColor = isError ? "f44336" : "00acc1";
+                TeamsTasks
+                    .SendTeamsMessage(m => m
+                        .SetTitle(title)
+                        .SetText(message)
+                        .SetThemeColor(themeColor),
+                        DanglCiCdTeamsWebhookUrl);
+            }
+            catch (Exception e)
+            {
+                Serilog.Log.Error("Failed to send Teams message: " + e);
+            }
         }
     }
 
