@@ -4,7 +4,7 @@ All notable changes to **Nuke.WebDocu** are documented here.
 
 ## v5.0.0:
 - Update NUKE to v7
-- Version alignment with **Nuke.WebDocu**
+- Version alignment with **Nuke.GitHub**
 
 ## v4.0.1:
 - Update Azure Storage dependencies
