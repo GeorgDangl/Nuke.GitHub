@@ -1,9 +1,17 @@
-# Nuke.GitHub
+# Nuke.GitHub & Nuke WebDocu
 
 [![Build Status](https://jenkins.dangl.me/buildStatus/icon?job=GeorgDangl%2FNuke.GitHub%2Fdevelop)](https://jenkins.dangl.me/job/GeorgDangl/job/Nuke.GitHub/job/develop/)
 
+**Nuke.GitHub**  
 ![NuGet](https://img.shields.io/nuget/v/Nuke.GitHub.svg)
-[![MyGet](https://img.shields.io/myget/dangl/v/Nuke.GitHub.svg)]()
+[![MyGet](https://img.shields.io/myget/dangl/v/Nuke.GitHub.svg)]()  
+**Nuke.WebDocu**  
+![NuGet](https://img.shields.io/nuget/v/Nuke.WebDocu.svg)
+[![MyGet](https://img.shields.io/myget/dangl/v/Nuke.WebDocu.svg)]()
+
+> This repository contains both **Nuke.GitHub** and **Nuke.WebDocu**.
+
+# Nuke.GitHub
 
 This plugin provides some methods to work with GitHub repositories
 in [NUKE Build](https://github.com/nuke-build/nuke).
@@ -16,7 +24,7 @@ Currently supported:
 
 [Link to documentation](https://docs.dangl-it.com/Projects/Nuke.GitHub).
 
-[Changelog](./Changelog.md)
+[Changelog](./Changelog_WebDocu.md)
 
 ## CI Builds
 
@@ -57,3 +65,73 @@ All builds are available on MyGet:
                 .SetToken(GitHubAuthenticationToken)
             );
         });
+
+# Nuke.WebDocu
+
+This plugin provides a task to upload documentation packages to [WebDocu sites](https://github.com/GeorgDangl/WebDocu).
+It's written for the [NUKE Build](https://github.com/nuke-build/nuke) system.
+
+[Link to documentation](https://docs.dangl-it.com/Projects/Nuke.WebDocu).
+
+[Changelog](./Changelog_WebDocu.md)
+
+## CI Builds
+
+All builds are available on MyGet:
+
+    https://www.myget.org/F/dangl/api/v2
+    https://www.myget.org/F/dangl/api/v3/index.json
+
+## Example
+
+When publishing to WebDocu, you have to include the version of the docs.
+
+### Getting the Version from Generated NuGet Packages
+
+```
+Target UploadDocumentation => _ => _
+    .DependsOn(BuildDocumentation)
+    .Requires(() => DocuApiKey)
+    .Requires(() => DocuBaseUrl)
+    .Executes(() =>
+    {
+        WebDocuTasks.WebDocu(s =>
+        {
+            var packageVersion = GlobFiles(OutputDirectory, "*.nupkg").NotEmpty()
+                .Where(x => !x.EndsWith("symbols.nupkg"))
+                .Select(Path.GetFileName)
+                .Select(x => WebDocuTasks.GetVersionFromNuGetPackageFilename(x, "Nuke.WebDeploy"))
+                .First();
+
+            return s.SetDocuBaseUrl(DocuBaseUrl)
+                    .SetDocuApiKey(DocuApiKey)
+                    .SetSourceDirectory(OutputDirectory / "docs")
+                    .SetVersion(packageVersion);
+        });
+    });
+```
+
+### Getting the Version from GitVersion
+
+```
+Target UploadDocumentation => _ => _
+    .DependsOn(Push) // To have a relation between pushed package version and published docs version
+    .DependsOn(BuildDocumentation)
+    .Requires(() => DocuApiKey)
+    .Requires(() => DocuApiEndpoint)
+    .Executes(() =>
+    {
+        WebDocuTasks.WebDocu(s => s.SetDocuApiEndpoint(DocuApiEndpoint)
+            .SetDocuApiKey(DocuApiKey)
+            .SetSourceDirectory(OutputDirectory / "docs")
+            .SetVersion(GitVersion.NuGetVersion));
+    });
+```
+
+The `DocuApiEndpoint` should look like this:
+
+    https://docs.dangl-it.com/API/Projects/Upload
+
+## License
+
+[This project is available under the MIT license.](LICENSE.md)

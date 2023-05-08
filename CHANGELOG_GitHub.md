@@ -2,6 +2,10 @@
 
 All notable changes to **Nuke.GitHub** are documented here.
 
+## v5.0.0:
+- Update NUKE to v7
+- Version alignment with **Nuke.WebDocu**
+
 ## v3.0.0:
 - Update NUKE to v6.0.1
 

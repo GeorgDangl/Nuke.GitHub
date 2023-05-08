@@ -13,9 +13,6 @@
           "type": "boolean",
           "description": "Indicates to continue a previously failed build attempt"
         },
-        "DocuApiKey": {
-          "type": "string"
-        },
         "DocuBaseUrl": {
           "type": "string"
         },
@@ -62,6 +59,12 @@
         "NuGetApiKey": {
           "type": "string"
         },
+        "NukeGitHubDocuApiKey": {
+          "type": "string"
+        },
+        "NukeWebDocuDocuApiKey": {
+          "type": "string"
+        },
         "Partition": {
           "type": "string",
           "description": "Partition to use on CI"
@@ -102,6 +105,7 @@
               "PublishGitHubRelease",
               "Push",
               "Restore",
+              "Test",
               "UploadDocumentation"
             ]
           }
@@ -125,6 +129,7 @@
               "PublishGitHubRelease",
               "Push",
               "Restore",
+              "Test",
               "UploadDocumentation"
             ]
           }
