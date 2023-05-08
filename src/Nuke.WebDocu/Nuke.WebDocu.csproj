@@ -14,8 +14,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nuke.Common" Version="6.1.2" />
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.13.0" />
+    <PackageReference Include="Nuke.Common" Version="7.0.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.16.0" />
   </ItemGroup>
   
 </Project>
