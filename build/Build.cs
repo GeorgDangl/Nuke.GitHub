@@ -274,14 +274,14 @@ class Build : NukeBuild
                 .SetSkipForVersionConflicts(true)
                 .SetDocuBaseUrl(DocuBaseUrl)
                 .SetDocuApiKey(NukeGitHubDocuApiKey)
-                .SetSourceDirectory(OutputDirectory / "docs" / "github")
+                .SetSourceDirectory(OutputDirectory / "docs_github")
                 .SetVersion(GitVersion.NuGetVersion));
 
             WebDocu(s => s
                 .SetSkipForVersionConflicts(true)
                 .SetDocuBaseUrl(DocuBaseUrl)
                 .SetDocuApiKey(NukeWebDocuDocuApiKey)
-                .SetSourceDirectory(OutputDirectory / "docs" / "webdocu")
+                .SetSourceDirectory(OutputDirectory / "docs_webdocu")
                 .SetVersion(GitVersion.NuGetVersion));
         });
 
