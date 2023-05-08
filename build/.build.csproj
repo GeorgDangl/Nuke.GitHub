@@ -11,12 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nuke.CodeGeneration" Version="6.3.0" />
     <PackageReference Include="Nuke.Common" Version="7.0.0" />
     <PackageDownload Include="GitVersion.Tool" Version="[5.8.1]" />
     <PackageReference Include="docfx.console" Version="2.59.4">
       <ExcludeAssets>build</ExcludeAssets>
     </PackageReference>
+    <PackageReference Include="Nuke.Tooling.Generator" Version="7.0.0" />
     <!-- The references below are required to compiled the embedded files from
          the separate Nuke.GitHub and Nuke.WebDocu projects itself -->
     <PackageReference Include="Octokit" Version="5.1.0" />

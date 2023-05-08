@@ -1,18 +1,17 @@
-﻿using Nuke.Common.Tooling;
+﻿using Azure.Storage.Blobs;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Nuke.Common.CI.Jenkins;
+using Nuke.Common.Tooling;
 using System;
 using System.IO;
 using System.IO.Compression;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Nuke.Common;
-using static Nuke.Common.IO.PathConstruction;
 using System.Linq;
-using Nuke.Common.CI.Jenkins;
-using System.Web;
-using Newtonsoft.Json;
+using System.Net.Http;
 using System.Text;
-using Newtonsoft.Json.Linq;
-using Azure.Storage.Blobs;
+using System.Threading.Tasks;
+using System.Web;
+using static Nuke.Common.IO.Globbing;
 
 namespace Nuke.WebDocu
 {
@@ -142,7 +141,6 @@ namespace Nuke.WebDocu
                 var uploadResponse = await sasBlobClient.UploadAsync(assetStream);
                 return uploadResponse.GetRawResponse().Status >= 200 && uploadResponse.GetRawResponse().Status <= 299;
             }
-
         }
 
         static async Task UploadAssetFileDirectly(string assetFilePath, WebDocuSettings settings)
