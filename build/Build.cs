@@ -1,32 +1,28 @@
-﻿using Nuke.Common.Git;
+﻿using Nuke.Common;
+using Nuke.Common.Git;
+using Nuke.Common.IO;
+using Nuke.Common.ProjectModel;
+using Nuke.Common.Tooling;
+using Nuke.Common.Tools.AzureKeyVault;
+using Nuke.Common.Tools.DocFX;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
-using Nuke.Common;
+using Nuke.Common.Tools.Teams;
 using Nuke.Common.Utilities.Collections;
 using Nuke.GitHub;
 using Nuke.WebDocu;
 using System;
 using System.IO;
 using System.Linq;
+using static Nuke.CodeGeneration.CodeGenerator;
 using static Nuke.Common.ChangeLog.ChangelogTasks;
-using static Nuke.Common.Tools.DotNet.DotNetTasks;
-using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.FileSystemTasks;
-using static Nuke.Common.IO.PathConstruction;
+using static Nuke.Common.IO.Globbing;
+using static Nuke.Common.Tools.DocFX.DocFXTasks;
+using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.GitHub.ChangeLogExtensions;
 using static Nuke.GitHub.GitHubTasks;
 using static Nuke.WebDocu.WebDocuTasks;
-using static Nuke.Common.Tools.DocFX.DocFXTasks;
-using Nuke.Common.Tools.DocFX;
-using Nuke.Common.ProjectModel;
-using Nuke.Common.IO;
-using static Nuke.CodeGeneration.CodeGenerator;
-using Nuke.Common.Tooling;
-using NuGet.Packaging.Core;
-using Nuke.Common.Tools.Teams;
-using Nuke.Common.Tools.AzureKeyVault;
-using Nuke.Common.Tools.AzureKeyVault;
-using static Nuke.Common.IO.Globbing;
 
 class Build : NukeBuild
 {
@@ -174,7 +170,7 @@ class Build : NukeBuild
             {
                 Assert.Fail(nameof(PublicMyGetSource) + " is required");
             }
-            
+
             if (string.IsNullOrWhiteSpace(PublicMyGetApiKey))
             {
                 Assert.Fail(nameof(PublicMyGetApiKey) + " is required");
@@ -184,22 +180,22 @@ class Build : NukeBuild
                 .Where(x => !x.EndsWith("symbols.nupkg"))
                 .ToList();
             Assert.NotEmpty(packages);
-                packages.ForEach(x =>
-                {
-                    DotNetNuGetPush(s => s
-                        .EnableSkipDuplicate()
-                        .SetTargetPath(x)
-                        .SetSource(PublicMyGetSource)
-                        .SetApiKey(PublicMyGetApiKey));
-                });
+            packages.ForEach(x =>
+            {
+                DotNetNuGetPush(s => s
+                    .EnableSkipDuplicate()
+                    .SetTargetPath(x)
+                    .SetSource(PublicMyGetSource)
+                    .SetApiKey(PublicMyGetApiKey));
+            });
 
             if (GitVersion.BranchName.Equals("master") || GitVersion.BranchName.Equals("origin/master"))
             {
                 // Stable releases are published to NuGet
-                    packages.ForEach(x => DotNetNuGetPush(s => s
-                        .SetTargetPath(x)
-                        .SetSource("https://api.nuget.org/v3/index.json")
-                        .SetApiKey(NuGetApiKey)));
+                packages.ForEach(x => DotNetNuGetPush(s => s
+                    .SetTargetPath(x)
+                    .SetSource("https://api.nuget.org/v3/index.json")
+                    .SetApiKey(NuGetApiKey)));
 
                 SendTeamsMessage("New Release", $"New release available for Nuke.GitHub & Nuke.WebDocu: {GitVersion.NuGetVersion}", false);
             }
