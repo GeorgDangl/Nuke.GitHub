@@ -16,7 +16,6 @@ using static Nuke.Common.IO.PathConstruction;
 using static Nuke.GitHub.ChangeLogExtensions;
 using static Nuke.GitHub.GitHubTasks;
 using static Nuke.WebDocu.WebDocuTasks;
-using Nuke.Common.Tools.AzureKeyVault.Attributes;
 using static Nuke.Common.Tools.DocFX.DocFXTasks;
 using Nuke.Common.Tools.DocFX;
 using Nuke.Common.ProjectModel;
@@ -25,17 +24,20 @@ using static Nuke.CodeGeneration.CodeGenerator;
 using Nuke.Common.Tooling;
 using NuGet.Packaging.Core;
 using Nuke.Common.Tools.Teams;
+using Nuke.Common.Tools.AzureKeyVault;
+using Nuke.Common.Tools.AzureKeyVault;
+using static Nuke.Common.IO.Globbing;
 
 class Build : NukeBuild
 {
     // Console application entry. Also defines the default target.
     public static int Main() => Execute<Build>(x => x.Compile);
 
-    [KeyVaultSettings(
+    [AzureKeyVaultConfiguration(
         BaseUrlParameterName = nameof(KeyVaultBaseUrl),
         ClientIdParameterName = nameof(KeyVaultClientId),
         ClientSecretParameterName = nameof(KeyVaultClientSecret))]
-    readonly KeyVaultSettings KeyVaultSettings;
+    readonly AzureKeyVaultConfiguration KeyVaultSettings;
 
     [Parameter] string KeyVaultBaseUrl;
     [Parameter] string KeyVaultClientId;
@@ -45,14 +47,14 @@ class Build : NukeBuild
 
     [Parameter] readonly string Configuration = IsLocalBuild ? "Debug" : "Release";
 
-    [KeyVaultSecret] string DocuBaseUrl;
-    [KeyVaultSecret] string GitHubAuthenticationToken;
-    [KeyVaultSecret] string PublicMyGetSource;
-    [KeyVaultSecret] string PublicMyGetApiKey;
-    [KeyVaultSecret("NukeGitHub-DocuApiKey")] string NukeGitHubDocuApiKey;
-    [KeyVaultSecret("NukeWebDocu-DocuApiKey")] string NukeWebDocuDocuApiKey;
-    [KeyVaultSecret] string NuGetApiKey;
-    [KeyVaultSecret] readonly string DanglCiCdTeamsWebhookUrl;
+    [AzureKeyVaultSecret] string DocuBaseUrl;
+    [AzureKeyVaultSecret] string GitHubAuthenticationToken;
+    [AzureKeyVaultSecret] string PublicMyGetSource;
+    [AzureKeyVaultSecret] string PublicMyGetApiKey;
+    [AzureKeyVaultSecret("NukeGitHub-DocuApiKey")] string NukeGitHubDocuApiKey;
+    [AzureKeyVaultSecret("NukeWebDocu-DocuApiKey")] string NukeWebDocuDocuApiKey;
+    [AzureKeyVaultSecret] string NuGetApiKey;
+    [AzureKeyVaultSecret] readonly string DanglCiCdTeamsWebhookUrl;
 
     [Solution("Nuke.GitHub.sln")] readonly Solution Solution;
     AbsolutePath SolutionDirectory => Solution.Directory;
