@@ -3,9 +3,9 @@
     {
       "src": [
         {
-          "src": "src",
+          "src": "../../src/Nuke.GitHub",
           "files": [
-            "Nuke.GitHub/*.csproj"
+            "*.csproj"
           ],
           "exclude": [
             "**/bin/**",
@@ -48,10 +48,10 @@
       "_enableSearch": true,
       "_gitUrlPattern": "github"
     },
-    "dest": "output/docs",
+    "dest": "../../output/docs_github",
     "template": [
       "default",
-      "docstemplate"
+      "../../docstemplate"
     ]
   }
 }

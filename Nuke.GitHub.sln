@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29609.76
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = ".build", "build\.build.csproj", "{C57DD98E-6C51-4277-BC58-4CE05F718788}"
 EndProject
@@ -11,13 +11,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E9941FBC-483
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5340EBE2-8978-4B8F-86C7-3EEF99A95C44}"
 	ProjectSection(SolutionItems) = preProject
-		CHANGELOG.md = CHANGELOG.md
-		docfx.json = docfx.json
+		CHANGELOG_WebDocu.md = CHANGELOG_WebDocu.md
+		CHANGELOG_GitHub.md = CHANGELOG_GitHub.md
+		docs\GitHub\docfx_GitHub.json = docs\GitHub\docfx_GitHub.json
+		docs\WebDocu\docfx_WebDocu.json = docs\WebDocu\docfx_WebDocu.json
 		GitVersion.yml = GitVersion.yml
+		Jenkinsfile = Jenkinsfile
 		LICENSE.md = LICENSE.md
 		README.md = README.md
-		toc.yml = toc.yml
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{FB1D333C-5E50-4A06-85F5-5AF080BA7DA8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nuke.WebDocu", "src\Nuke.WebDocu\Nuke.WebDocu.csproj", "{373D55BC-B66E-41DF-AF42-95614E541CA0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nuke.WebDocu.Tests", "test\Nuke.WebDocu.Tests\Nuke.WebDocu.Tests.csproj", "{2899133E-B837-469E-8E2B-361E27E2E639}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,12 +39,22 @@ Global
 		{CE8839DE-7523-43F6-A8AF-AE3CFE299A6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE8839DE-7523-43F6-A8AF-AE3CFE299A6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE8839DE-7523-43F6-A8AF-AE3CFE299A6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{373D55BC-B66E-41DF-AF42-95614E541CA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{373D55BC-B66E-41DF-AF42-95614E541CA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{373D55BC-B66E-41DF-AF42-95614E541CA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{373D55BC-B66E-41DF-AF42-95614E541CA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2899133E-B837-469E-8E2B-361E27E2E639}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2899133E-B837-469E-8E2B-361E27E2E639}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2899133E-B837-469E-8E2B-361E27E2E639}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2899133E-B837-469E-8E2B-361E27E2E639}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CE8839DE-7523-43F6-A8AF-AE3CFE299A6B} = {E9941FBC-483C-4C6E-8902-2150571932F6}
+		{373D55BC-B66E-41DF-AF42-95614E541CA0} = {E9941FBC-483C-4C6E-8902-2150571932F6}
+		{2899133E-B837-469E-8E2B-361E27E2E639} = {FB1D333C-5E50-4A06-85F5-5AF080BA7DA8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {840690BA-16D6-4D86-B8ED-EB73C514FAE2}

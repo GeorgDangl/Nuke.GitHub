@@ -1,68 +1,97 @@
-﻿using Nuke.Common.Git;
+﻿using Nuke.Common;
+using Nuke.Common.Git;
+using Nuke.Common.IO;
+using Nuke.Common.ProjectModel;
+using Nuke.Common.Tooling;
+using Nuke.Common.Tools.AzureKeyVault;
+using Nuke.Common.Tools.DocFX;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
-using Nuke.Common;
+using Nuke.Common.Tools.Teams;
 using Nuke.Common.Utilities.Collections;
 using Nuke.GitHub;
 using Nuke.WebDocu;
 using System;
 using System.IO;
 using System.Linq;
+using static Nuke.CodeGeneration.CodeGenerator;
 using static Nuke.Common.ChangeLog.ChangelogTasks;
+using static Nuke.Common.IO.Globbing;
+using static Nuke.Common.Tools.DocFX.DocFXTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
-using static Nuke.Common.EnvironmentInfo;
-using static Nuke.Common.IO.FileSystemTasks;
-using static Nuke.Common.IO.PathConstruction;
 using static Nuke.GitHub.ChangeLogExtensions;
 using static Nuke.GitHub.GitHubTasks;
 using static Nuke.WebDocu.WebDocuTasks;
-using Nuke.Common.Tools.AzureKeyVault.Attributes;
-using static Nuke.Common.Tools.DocFX.DocFXTasks;
-using Nuke.Common.Tools.DocFX;
-using Nuke.Common.ProjectModel;
-using Nuke.Common.IO;
-using static Nuke.CodeGeneration.CodeGenerator;
 
 class Build : NukeBuild
 {
     // Console application entry. Also defines the default target.
     public static int Main() => Execute<Build>(x => x.Compile);
 
-    [KeyVaultSettings(
+    [AzureKeyVaultConfiguration(
         BaseUrlParameterName = nameof(KeyVaultBaseUrl),
         ClientIdParameterName = nameof(KeyVaultClientId),
-        ClientSecretParameterName = nameof(KeyVaultClientSecret))]
-    readonly KeyVaultSettings KeyVaultSettings;
+        ClientSecretParameterName = nameof(KeyVaultClientSecret),
+        TenantIdParameterName = nameof(KeyVaultTenantId))]
+    readonly AzureKeyVaultConfiguration KeyVaultSettings;
 
     [Parameter] string KeyVaultBaseUrl;
     [Parameter] string KeyVaultClientId;
     [Parameter] string KeyVaultClientSecret;
+    [Parameter] string KeyVaultTenantId;
     [GitVersion] readonly GitVersion GitVersion;
     [GitRepository] readonly GitRepository GitRepository;
 
     [Parameter] readonly string Configuration = IsLocalBuild ? "Debug" : "Release";
 
-    [KeyVaultSecret] string DocuBaseUrl;
-    [KeyVaultSecret] string GitHubAuthenticationToken;
-    [KeyVaultSecret] string PublicMyGetSource;
-    [KeyVaultSecret] string PublicMyGetApiKey;
-    [KeyVaultSecret("NukeGitHub-DocuApiKey")] string DocuApiKey;
-    [KeyVaultSecret] string NuGetApiKey;
+    [AzureKeyVaultSecret] string DocuBaseUrl;
+    [AzureKeyVaultSecret] string GitHubAuthenticationToken;
+    [AzureKeyVaultSecret] string PublicMyGetSource;
+    [AzureKeyVaultSecret] string PublicMyGetApiKey;
+    [AzureKeyVaultSecret("NukeGitHub-DocuApiKey")] string NukeGitHubDocuApiKey;
+    [AzureKeyVaultSecret("NukeWebDocu-DocuApiKey")] string NukeWebDocuDocuApiKey;
+    [AzureKeyVaultSecret] string NuGetApiKey;
+    [AzureKeyVaultSecret] readonly string DanglCiCdTeamsWebhookUrl;
 
     [Solution("Nuke.GitHub.sln")] readonly Solution Solution;
     AbsolutePath SolutionDirectory => Solution.Directory;
     AbsolutePath OutputDirectory => SolutionDirectory / "output";
     AbsolutePath SourceDirectory => SolutionDirectory / "src";
 
-    string DocFxFile => SolutionDirectory / "docfx.json";
+    string NukeGitHubDocFxFile => SolutionDirectory / "docs" / "GitHub" / "docfx_GitHub.json";
+    string NukeWebDocuDocFxFile => SolutionDirectory / "docs" / "WebDocu" / "docfx_WebDocu.json";
 
-    string ChangeLogFile => RootDirectory / "CHANGELOG.md";
+    string NukeGitHubChangeLogFile => RootDirectory / "CHANGELOG_GitHub.md";
+    string NukeWebDocuChangeLogFile => RootDirectory / "CHANGELOG_WebDocu.md";
+
+    protected override void OnTargetFailed(string target)
+    {
+        if (IsServerBuild)
+        {
+            SendTeamsMessage("Build Failed", $"Target {target} failed for Nuke.GitHub & Nuke.WebDocu, " +
+                        $"Branch: {GitRepository.Branch}", true);
+        }
+    }
+
+    private void SendTeamsMessage(string title, string message, bool isError)
+    {
+        if (!string.IsNullOrWhiteSpace(DanglCiCdTeamsWebhookUrl))
+        {
+            var themeColor = isError ? "f44336" : "00acc1";
+            TeamsTasks
+                .SendTeamsMessage(m => m
+                    .SetTitle(title)
+                    .SetText(message)
+                    .SetThemeColor(themeColor),
+                    DanglCiCdTeamsWebhookUrl);
+        }
+    }
 
     Target Clean => _ => _
         .Executes(() =>
         {
-            SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
-            EnsureCleanDirectory(OutputDirectory);
+            SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(d => d.DeleteDirectory());
+            OutputDirectory.CreateOrCleanDirectory();
         });
 
     Target Restore => _ => _
@@ -84,20 +113,53 @@ class Build : NukeBuild
                 .SetInformationalVersion(GitVersion.InformationalVersion));
         });
 
+    Target Test => _ => _
+        .DependsOn(Compile)
+        .Executes(() =>
+        {
+            DotNetTest(x => x
+                .SetNoBuild(true)
+                .SetProjectFile(RootDirectory / "test" / "Nuke.WebDocu.Tests")
+                .SetTestAdapterPath(".")
+                .CombineWith(c => new[] { "net7.0" }
+                    .Select(framework => c.SetFramework(framework).SetLoggers($"xunit;LogFilePath={OutputDirectory / $"tests-{framework}.xml"}"))
+                ), degreeOfParallelism: Environment.ProcessorCount, completeOnFailure: true);
+        });
+
     Target Pack => _ => _
         .DependsOn(Compile)
         .Executes(() =>
         {
-            var changeLog = GetCompleteChangeLog(ChangeLogFile)
-                .EscapeStringPropertyForMsBuild();
+            var packData = new[]
+            {
+                new
+                {
+                    Changelog = NukeGitHubChangeLogFile,
+                    Title = "GitHub for NUKE Build - www.dangl-it.com",
+                    Project = SourceDirectory / "Nuke.GitHub"
+                },
+                new
+                {
+                    Changelog = NukeWebDocuChangeLogFile,
+                    Title = "WebDocu for NUKE Build - www.dangl-it.com",
+                    Project = SourceDirectory / "Nuke.WebDocu"
+                }
+            };
 
-            DotNetPack(x => x
-                .SetConfiguration(Configuration)
-                .SetPackageReleaseNotes(changeLog)
-                .SetTitle("GitHub for NUKE Build - www.dangl-it.com")
-                .EnableNoBuild()
-                .SetOutputDirectory(OutputDirectory)
-                .SetVersion(GitVersion.NuGetVersion));
+            foreach (var packInfo in packData)
+            {
+                var changeLog = GetCompleteChangeLog(packInfo.Changelog)
+                    .EscapeStringPropertyForMsBuild();
+
+                DotNetPack(x => x
+                    .SetConfiguration(Configuration)
+                    .SetProject(packInfo.Project)
+                    .SetPackageReleaseNotes(changeLog)
+                    .SetTitle(packInfo.Title)
+                    .EnableNoBuild()
+                    .SetOutputDirectory(OutputDirectory)
+                    .SetVersion(GitVersion.NuGetVersion));
+            }
         });
 
     Target Push => _ => _
@@ -109,7 +171,7 @@ class Build : NukeBuild
             {
                 Assert.Fail(nameof(PublicMyGetSource) + " is required");
             }
-            
+
             if (string.IsNullOrWhiteSpace(PublicMyGetApiKey))
             {
                 Assert.Fail(nameof(PublicMyGetApiKey) + " is required");
@@ -119,22 +181,24 @@ class Build : NukeBuild
                 .Where(x => !x.EndsWith("symbols.nupkg"))
                 .ToList();
             Assert.NotEmpty(packages);
-                packages.ForEach(x =>
-                {
-                    DotNetNuGetPush(s => s
-                        .EnableSkipDuplicate()
-                        .SetTargetPath(x)
-                        .SetSource(PublicMyGetSource)
-                        .SetApiKey(PublicMyGetApiKey));
-                });
+            packages.ForEach(x =>
+            {
+                DotNetNuGetPush(s => s
+                    .EnableSkipDuplicate()
+                    .SetTargetPath(x)
+                    .SetSource(PublicMyGetSource)
+                    .SetApiKey(PublicMyGetApiKey));
+            });
 
             if (GitVersion.BranchName.Equals("master") || GitVersion.BranchName.Equals("origin/master"))
             {
                 // Stable releases are published to NuGet
-                    packages.ForEach(x => DotNetNuGetPush(s => s
-                        .SetTargetPath(x)
-                        .SetSource("https://api.nuget.org/v3/index.json")
-                        .SetApiKey(NuGetApiKey)));
+                packages.ForEach(x => DotNetNuGetPush(s => s
+                    .SetTargetPath(x)
+                    .SetSource("https://api.nuget.org/v3/index.json")
+                    .SetApiKey(NuGetApiKey)));
+
+                SendTeamsMessage("New Release", $"New release available for Nuke.GitHub & Nuke.WebDocu: {GitVersion.NuGetVersion}", false);
             }
         });
 
@@ -142,7 +206,8 @@ class Build : NukeBuild
         .DependsOn(Restore)
         .Executes(() =>
         {
-            DocFXMetadata(x => x.AddProjects(DocFxFile));
+            DocFXMetadata(x => x.AddProjects(NukeGitHubDocFxFile));
+            DocFXMetadata(x => x.AddProjects(NukeWebDocuDocFxFile));
         });
 
     Target BuildDocumentation => _ => _
@@ -150,19 +215,39 @@ class Build : NukeBuild
         .DependsOn(BuildDocFxMetadata)
         .Executes(() =>
         {
-            // Using README.md as index.md
-            if (File.Exists(SolutionDirectory / "index.md"))
+            var configs = new[]
             {
-                File.Delete(SolutionDirectory / "index.md");
+                NukeGitHubDocFxFile,
+                NukeWebDocuDocFxFile
+            };
+
+            foreach (var config in configs)
+            {
+                var docsPath = (AbsolutePath)Path.GetDirectoryName(config);
+                Serilog.Log.Information(docsPath);
+
+                // Using README.md as index.md
+                if (File.Exists(docsPath / "index.md"))
+                {
+                    File.Delete(docsPath / "index.md");
+                }
+
+                File.Copy(SolutionDirectory / "README.md", docsPath / "index.md", overwrite: true);
+                File.Copy(SolutionDirectory / "LICENSE.md", docsPath / "LICENSE.md", overwrite: true);
+                File.Copy(SolutionDirectory / "app-logo.png", docsPath / "app-logo.png", overwrite: true);
+                File.Copy(NukeGitHubChangeLogFile, docsPath / "CHANGELOG_GitHub.md", overwrite: true);
+                File.Copy(NukeWebDocuChangeLogFile, docsPath / "CHANGELOG_WebDocu.md", overwrite: true);
+
+                DocFXBuild(x => x.SetConfigFile(config));
+
+                File.Delete(docsPath / "LICENSE.md");
+                File.Delete(docsPath / "index.md");
+                File.Delete(docsPath / "app-logo.png");
+                File.Delete(docsPath / "CHANGELOG_GitHub.md");
+                File.Delete(docsPath / "CHANGELOG_WebDocu.md");
+                Directory.Delete(docsPath / "api", true);
+                Directory.Delete(docsPath / "obj", true);
             }
-
-            File.Copy(SolutionDirectory / "README.md", SolutionDirectory / "index.md");
-
-            DocFXBuild(x => x.SetConfigFile(DocFxFile));
-
-            File.Delete(SolutionDirectory / "index.md");
-            Directory.Delete(SolutionDirectory / "api", true);
-            Directory.Delete(SolutionDirectory / "obj", true);
         });
 
     Target UploadDocumentation => _ => _
@@ -170,23 +255,36 @@ class Build : NukeBuild
         .DependsOn(BuildDocumentation)
         .Executes(() =>
         {
-            if (string.IsNullOrWhiteSpace(DocuApiKey))
-            {
-                Assert.Fail(nameof(DocuApiKey) + " is required");
-            }
-
             if (string.IsNullOrWhiteSpace(DocuBaseUrl))
             {
                 Assert.Fail(nameof(DocuBaseUrl) + " is required");
             }
 
+            if (string.IsNullOrWhiteSpace(NukeGitHubDocuApiKey))
+            {
+                Assert.Fail(nameof(NukeGitHubDocuApiKey) + " is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(NukeWebDocuDocuApiKey))
+            {
+                Assert.Fail(nameof(NukeWebDocuDocuApiKey) + " is required");
+            }
+
             WebDocu(s => s
                 .SetSkipForVersionConflicts(true)
+                .SetMarkdownChangelog(File.ReadAllText(NukeGitHubChangeLogFile))
                 .SetDocuBaseUrl(DocuBaseUrl)
-                .SetDocuApiKey(DocuApiKey)
-                .SetSourceDirectory(OutputDirectory / "docs")
-                .SetVersion(GitVersion.NuGetVersion)
-            );
+                .SetDocuApiKey(NukeGitHubDocuApiKey)
+                .SetSourceDirectory(OutputDirectory / "docs_github")
+                .SetVersion(GitVersion.NuGetVersion));
+
+            WebDocu(s => s
+                .SetSkipForVersionConflicts(true)
+                .SetMarkdownChangelog(File.ReadAllText(NukeWebDocuChangeLogFile))
+                .SetDocuBaseUrl(DocuBaseUrl)
+                .SetDocuApiKey(NukeWebDocuDocuApiKey)
+                .SetSourceDirectory(OutputDirectory / "docs_webdocu")
+                .SetVersion(GitVersion.NuGetVersion));
         });
 
     Target PublishGitHubRelease => _ => _
@@ -201,10 +299,13 @@ class Build : NukeBuild
 
             var releaseTag = $"v{GitVersion.MajorMinorPatch}";
 
-            var changeLogSectionEntries = ExtractChangelogSectionNotes(ChangeLogFile);
-            var latestChangeLog = changeLogSectionEntries
+            var gitHubChangeLogSectionEntries = ExtractChangelogSectionNotes(NukeGitHubChangeLogFile)
                 .Aggregate((c, n) => c + Environment.NewLine + n);
-            var completeChangeLog = $"## {releaseTag}" + Environment.NewLine + latestChangeLog;
+            var webDocuChangeLogSectionEntries = ExtractChangelogSectionNotes(NukeWebDocuChangeLogFile)
+                .Aggregate((c, n) => c + Environment.NewLine + n);
+            var completeChangeLog = $"## {releaseTag}" + Environment.NewLine;
+            completeChangeLog += "## Nuke.GitHub" + Environment.NewLine + gitHubChangeLogSectionEntries + Environment.NewLine;
+            completeChangeLog += "## Nuke.WebDocu" + Environment.NewLine + webDocuChangeLogSectionEntries;
 
             var repositoryInfo = GetGitHubRepositoryInfo(GitRepository);
 

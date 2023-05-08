@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "Build Schema",
   "$ref": "#/definitions/build",
+  "title": "Build Schema",
   "definitions": {
     "build": {
       "type": "object",
@@ -12,15 +12,6 @@
         "Continue": {
           "type": "boolean",
           "description": "Indicates to continue a previously failed build attempt"
-        },
-        "DocuApiKey": {
-          "type": "string"
-        },
-        "DocuBaseUrl": {
-          "type": "string"
-        },
-        "GitHubAuthenticationToken": {
-          "type": "string"
         },
         "Help": {
           "type": "boolean",
@@ -33,6 +24,7 @@
             "AppVeyor",
             "AzurePipelines",
             "Bamboo",
+            "Bitbucket",
             "Bitrise",
             "GitHubActions",
             "GitLab",
@@ -55,12 +47,12 @@
         "KeyVaultClientSecret": {
           "type": "string"
         },
+        "KeyVaultTenantId": {
+          "type": "string"
+        },
         "NoLogo": {
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"
-        },
-        "NuGetApiKey": {
-          "type": "string"
         },
         "Partition": {
           "type": "string",
@@ -76,12 +68,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "PublicMyGetApiKey": {
-          "type": "string"
-        },
-        "PublicMyGetSource": {
-          "type": "string"
         },
         "Root": {
           "type": "string",
@@ -102,6 +88,7 @@
               "PublishGitHubRelease",
               "Push",
               "Restore",
+              "Test",
               "UploadDocumentation"
             ]
           }
@@ -125,6 +112,7 @@
               "PublishGitHubRelease",
               "Push",
               "Restore",
+              "Test",
               "UploadDocumentation"
             ]
           }
