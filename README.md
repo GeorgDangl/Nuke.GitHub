@@ -45,10 +45,13 @@ All builds are available on MyGet:
         .OnlyWhen(() => GitVersion.BranchName.Equals("master") || GitVersion.BranchName.Equals("origin/master"))
         .Executes<Task>(async () =>
         {
+            // You'll create a tag for the release, e.g. v1.0.0
             var releaseTag = $"v{GitVersion.MajorMinorPatch}";
 
+            // We also want to fill the changelog with the latest release notes,
+            // so we're just reading from a markdown file containing the changelog.
             // Not providing the second, optional parameter gives the latest section
-            var changeLogSectionEntries = ExtractChangelogSectionNotes(ChangeLogFile);
+            var changeLogSectionEntries = Nuke.Common.ChangeLog.ExtractChangelogSectionNotes(ChangeLogFile);
             var latestChangeLog = changeLogSectionEntries
                 .Aggregate((c, n) => c + Environment.NewLine + n);
             var completeChangeLog = $"## {releaseTag}" + Environment.NewLine + latestChangeLog;
@@ -56,6 +59,8 @@ All builds are available on MyGet:
             var repositoryInfo = GetGitHubRepositoryInfo(GitRepository);
 
             await PublishRelease(x => x
+                // We can optionally upload artifacts to the release, for example by finding
+                // all nupkg files in the output directory
                 .SetArtifactPaths(GlobFiles(OutputDirectory, "*.nupkg").NotEmpty().ToArray())
                 .SetCommitSha(GitVersion.Sha)
                 .SetReleaseNotes(completeChangeLog)
