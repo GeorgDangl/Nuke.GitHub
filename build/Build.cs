@@ -172,6 +172,7 @@ class Build : NukeBuild
     Target Push => _ => _
         .DependsOn(Pack)
         .Requires(() => Configuration == "Release")
+        .OnlyWhenDynamic(() => IsOnBranch("master") || IsOnBranch("develop"))
         .Executes(() =>
         {
             if (string.IsNullOrWhiteSpace(PublicMyGetSource))
@@ -260,6 +261,7 @@ class Build : NukeBuild
     Target UploadDocumentation => _ => _
         .DependsOn(Push) // To have a relation between pushed package version and published docs version
         .DependsOn(BuildDocumentation)
+        .OnlyWhenDynamic(() => IsOnBranch("master") || IsOnBranch("develop"))
         .Executes(() =>
         {
             if (string.IsNullOrWhiteSpace(DocuBaseUrl))
@@ -296,7 +298,7 @@ class Build : NukeBuild
 
     Target PublishGitHubRelease => _ => _
         .DependsOn(Pack)
-        .OnlyWhenDynamic(() => GitVersion.BranchName.Equals("master") || GitVersion.BranchName.Equals("origin/master"))
+        .OnlyWhenDynamic(() => IsOnBranch("master"))
         .Executes(async () =>
         {
             if (string.IsNullOrWhiteSpace(GitHubAuthenticationToken))
@@ -337,4 +339,9 @@ class Build : NukeBuild
                 outputFileProvider: x => RootDirectory / "src" / "Nuke.GitHub" / "GitHubTasks.Generated.cs",
                 namespaceProvider: x => "Nuke.GitHub");
         });
+
+    private bool IsOnBranch(string branchName)
+    {
+        return GitVersion.BranchName.Equals(branchName) || GitVersion.BranchName.Equals($"origin/{branchName}");
+    }
 }
