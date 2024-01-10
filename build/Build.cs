@@ -1,4 +1,4 @@
-﻿using Nuke.Common;
+using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
@@ -46,8 +46,8 @@ class Build : NukeBuild
 
     [AzureKeyVaultSecret] string DocuBaseUrl;
     [AzureKeyVaultSecret] string GitHubAuthenticationToken;
-    [AzureKeyVaultSecret] string PublicMyGetSource;
-    [AzureKeyVaultSecret] string PublicMyGetApiKey;
+    [AzureKeyVaultSecret] string DanglPublicFeedSource;
+    [AzureKeyVaultSecret] string FeedzAccessToken;
     [AzureKeyVaultSecret("NukeGitHub-DocuApiKey")] string NukeGitHubDocuApiKey;
     [AzureKeyVaultSecret("NukeWebDocu-DocuApiKey")] string NukeWebDocuDocuApiKey;
     [AzureKeyVaultSecret] string NuGetApiKey;
@@ -77,13 +77,20 @@ class Build : NukeBuild
     {
         if (!string.IsNullOrWhiteSpace(DanglCiCdTeamsWebhookUrl))
         {
-            var themeColor = isError ? "f44336" : "00acc1";
-            TeamsTasks
-                .SendTeamsMessage(m => m
-                    .SetTitle(title)
-                    .SetText(message)
-                    .SetThemeColor(themeColor),
-                    DanglCiCdTeamsWebhookUrl);
+            try
+            {
+                var themeColor = isError ? "f44336" : "00acc1";
+                TeamsTasks
+                    .SendTeamsMessage(m => m
+                        .SetTitle(title)
+                        .SetText(message)
+                        .SetThemeColor(themeColor),
+                        DanglCiCdTeamsWebhookUrl);
+            }
+            catch (Exception e)
+            {
+                Serilog.Log.Error("Failed to send Teams message: " + e);
+            }
         }
     }
 
@@ -165,16 +172,17 @@ class Build : NukeBuild
     Target Push => _ => _
         .DependsOn(Pack)
         .Requires(() => Configuration == "Release")
+        .OnlyWhenDynamic(() => IsOnBranch("master") || IsOnBranch("develop"))
         .Executes(() =>
         {
-            if (string.IsNullOrWhiteSpace(PublicMyGetSource))
+            if (string.IsNullOrWhiteSpace(DanglPublicFeedSource))
             {
-                Assert.Fail(nameof(PublicMyGetSource) + " is required");
+                Assert.Fail(nameof(DanglPublicFeedSource) + " is required");
             }
 
-            if (string.IsNullOrWhiteSpace(PublicMyGetApiKey))
+            if (string.IsNullOrWhiteSpace(FeedzAccessToken))
             {
-                Assert.Fail(nameof(PublicMyGetApiKey) + " is required");
+                Assert.Fail(nameof(FeedzAccessToken) + " is required");
             }
 
             var packages = GlobFiles(OutputDirectory, "*.nupkg")
@@ -186,8 +194,8 @@ class Build : NukeBuild
                 DotNetNuGetPush(s => s
                     .EnableSkipDuplicate()
                     .SetTargetPath(x)
-                    .SetSource(PublicMyGetSource)
-                    .SetApiKey(PublicMyGetApiKey));
+                    .SetSource(DanglPublicFeedSource)
+                    .SetApiKey(FeedzAccessToken));
             });
 
             if (GitVersion.BranchName.Equals("master") || GitVersion.BranchName.Equals("origin/master"))
@@ -253,6 +261,7 @@ class Build : NukeBuild
     Target UploadDocumentation => _ => _
         .DependsOn(Push) // To have a relation between pushed package version and published docs version
         .DependsOn(BuildDocumentation)
+        .OnlyWhenDynamic(() => IsOnBranch("master") || IsOnBranch("develop"))
         .Executes(() =>
         {
             if (string.IsNullOrWhiteSpace(DocuBaseUrl))
@@ -289,7 +298,7 @@ class Build : NukeBuild
 
     Target PublishGitHubRelease => _ => _
         .DependsOn(Pack)
-        .OnlyWhenDynamic(() => GitVersion.BranchName.Equals("master") || GitVersion.BranchName.Equals("origin/master"))
+        .OnlyWhenDynamic(() => IsOnBranch("master"))
         .Executes(async () =>
         {
             if (string.IsNullOrWhiteSpace(GitHubAuthenticationToken))
@@ -330,4 +339,9 @@ class Build : NukeBuild
                 outputFileProvider: x => RootDirectory / "src" / "Nuke.GitHub" / "GitHubTasks.Generated.cs",
                 namespaceProvider: x => "Nuke.GitHub");
         });
+
+    private bool IsOnBranch(string branchName)
+    {
+        return GitVersion.BranchName.Equals(branchName) || GitVersion.BranchName.Equals($"origin/{branchName}");
+    }
 }
