@@ -2,6 +2,9 @@
 
 All notable changes to **Nuke.GitHub** are documented here.
 
+## v5.0.1:
+- Update logging to indicate if publishing a release is skipped due to it already existing
+
 ## v5.0.0:
 - Update NUKE to v7
 - Version alignment with **Nuke.WebDocu**

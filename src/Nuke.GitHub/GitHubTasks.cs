@@ -24,6 +24,7 @@ namespace Nuke.GitHub
             if (existingReleases.Any(r => r.TagName == releaseTag))
             {
                 // Release already present
+                Serilog.Log.Information($"The tag {releaseTag} is already present, no GitHub release is created");
                 return;
             }
 
