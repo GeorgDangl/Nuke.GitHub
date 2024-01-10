@@ -46,8 +46,8 @@ class Build : NukeBuild
 
     [AzureKeyVaultSecret] string DocuBaseUrl;
     [AzureKeyVaultSecret] string GitHubAuthenticationToken;
-    [AzureKeyVaultSecret] string PublicMyGetSource;
-    [AzureKeyVaultSecret] string PublicMyGetApiKey;
+    [AzureKeyVaultSecret] string DanglPublicFeedSource;
+    [AzureKeyVaultSecret] string FeedzAccessToken;
     [AzureKeyVaultSecret("NukeGitHub-DocuApiKey")] string NukeGitHubDocuApiKey;
     [AzureKeyVaultSecret("NukeWebDocu-DocuApiKey")] string NukeWebDocuDocuApiKey;
     [AzureKeyVaultSecret] string NuGetApiKey;
@@ -175,14 +175,14 @@ class Build : NukeBuild
         .OnlyWhenDynamic(() => IsOnBranch("master") || IsOnBranch("develop"))
         .Executes(() =>
         {
-            if (string.IsNullOrWhiteSpace(PublicMyGetSource))
+            if (string.IsNullOrWhiteSpace(DanglPublicFeedSource))
             {
-                Assert.Fail(nameof(PublicMyGetSource) + " is required");
+                Assert.Fail(nameof(DanglPublicFeedSource) + " is required");
             }
 
-            if (string.IsNullOrWhiteSpace(PublicMyGetApiKey))
+            if (string.IsNullOrWhiteSpace(FeedzAccessToken))
             {
-                Assert.Fail(nameof(PublicMyGetApiKey) + " is required");
+                Assert.Fail(nameof(FeedzAccessToken) + " is required");
             }
 
             var packages = GlobFiles(OutputDirectory, "*.nupkg")
@@ -194,8 +194,8 @@ class Build : NukeBuild
                 DotNetNuGetPush(s => s
                     .EnableSkipDuplicate()
                     .SetTargetPath(x)
-                    .SetSource(PublicMyGetSource)
-                    .SetApiKey(PublicMyGetApiKey));
+                    .SetSource(DanglPublicFeedSource)
+                    .SetApiKey(FeedzAccessToken));
             });
 
             if (GitVersion.BranchName.Equals("master") || GitVersion.BranchName.Equals("origin/master"))
