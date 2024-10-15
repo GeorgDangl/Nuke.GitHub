@@ -4,7 +4,6 @@ using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.AzureKeyVault;
-using Nuke.Common.Tools.DocFX;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Tools.Teams;
@@ -17,7 +16,6 @@ using System.Linq;
 using static Nuke.CodeGeneration.CodeGenerator;
 using static Nuke.Common.ChangeLog.ChangelogTasks;
 using static Nuke.Common.IO.Globbing;
-using static Nuke.Common.Tools.DocFX.DocFXTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.GitHub.ChangeLogExtensions;
 using static Nuke.GitHub.GitHubTasks;
@@ -214,8 +212,9 @@ class Build : NukeBuild
         .DependsOn(Restore)
         .Executes(() =>
         {
-            DocFXMetadata(x => x.AddProjects(NukeGitHubDocFxFile));
-            DocFXMetadata(x => x.AddProjects(NukeWebDocuDocFxFile));
+            var docFxPath = NuGetToolPathResolver.GetPackageExecutable("docfx", "tools/net8.0/any/docfx.dll");
+            DotNet($"{docFxPath} metadata {NukeGitHubDocFxFile}");
+            DotNet($"{docFxPath} metadata {NukeWebDocuDocFxFile}");
         });
 
     Target BuildDocumentation => _ => _
@@ -246,7 +245,8 @@ class Build : NukeBuild
                 File.Copy(NukeGitHubChangeLogFile, docsPath / "CHANGELOG_GitHub.md", overwrite: true);
                 File.Copy(NukeWebDocuChangeLogFile, docsPath / "CHANGELOG_WebDocu.md", overwrite: true);
 
-                DocFXBuild(x => x.SetConfigFile(config));
+                var docFxPath = NuGetToolPathResolver.GetPackageExecutable("docfx", "tools/net8.0/any/docfx.dll");
+                DotNet($"{docFxPath} {config}");
 
                 File.Delete(docsPath / "LICENSE.md");
                 File.Delete(docsPath / "index.md");
@@ -254,7 +254,6 @@ class Build : NukeBuild
                 File.Delete(docsPath / "CHANGELOG_GitHub.md");
                 File.Delete(docsPath / "CHANGELOG_WebDocu.md");
                 Directory.Delete(docsPath / "api", true);
-                Directory.Delete(docsPath / "obj", true);
             }
         });
 
