@@ -2,6 +2,9 @@
 
 All notable changes to **Nuke.WebDocu** are documented here.
 
+## v6.0.0:
+- Update NUKE to v8
+
 ## v5.0.0:
 - Update NUKE to v7
 - Version alignment with **Nuke.GitHub**

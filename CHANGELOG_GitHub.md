@@ -2,6 +2,9 @@
 
 All notable changes to **Nuke.GitHub** are documented here.
 
+## v6.0.0:
+- Update NUKE to v8
+
 ## v5.0.1:
 - Update logging to indicate if publishing a release is skipped due to it already existing
 
